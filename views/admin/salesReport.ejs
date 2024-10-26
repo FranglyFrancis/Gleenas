@@ -1,0 +1,242 @@
+<%- include('../partials/header') -%>
+<section class="content-main">
+
+    <div class="content-header">
+        <div class="col-lg-6">
+            <div>
+                <h2 class="content-title card-title">Sales report </h2>
+            </div>
+        </div>
+        <div class="col-lg-2">
+            <div class="row">
+                    <a href="/admin/download-excel" class="btn btn-primary">Download Excel</a>
+            </div> 
+        </div>
+        <div class="col-lg-2">
+            <div class="row">
+                    <a href="/admin/download-pdf" class="btn btn-secondary">Download PDF</a>
+            </div> 
+        </div>
+    </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">   
+                    <div class="col-lg-12">
+                        <div class="card mb-4">
+                        <form action="/admin/sales-report" method="get" id="salesReportForm">
+                        <div class="card-body">
+
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="mb-3">
+                                        <label class="form-label" for="period">Period:</label>
+                                        <span>
+                                            <select id="period" name="period" class="form-select">
+                                                <option value="" <%= period === '' ? 'selected' : '' %>>Custom</option>
+                                                <option value="day" <%= period === 'day' ? 'selected' : '' %>>1 Day</option>
+                                                <option value="week" <%= period === 'week' ? 'selected' : '' %>>1 Week</option>
+                                                <option value="month" <%= period === 'month' ? 'selected' : '' %>>1 Month</option>
+                                            </select>
+                                        </span> 
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="mb-3">
+                                        <label class="form-label" for="startDate">Start Date:</label>
+                                        <input type="date" id="startDate" class="form-control" name="startDate" value="<%= startDate ? new Date(startDate).toISOString().slice(0, 10) : '' %>">
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="mb-3">
+                                        <label class="form-label" for="endDate">End Date:</label>
+                                        <input type="date" id="endDate" name="endDate" class="form-control" value="<%= endDate ? new Date(endDate).toISOString().slice(0, 10) : '' %>">
+                                    </div>
+                                </div>
+                               
+                                <div class="col-lg-3">
+                                    <div class="mb-3">
+                                        <label class="form-label" for="generate">Generate Report:</label>
+                                        <button class="btn btn-md rounded font-sm hover-up" type="submit">Generate Report</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                         </form>
+                    </div>
+                </div> 
+
+            <!-- Sales Chart
+            <div class="col-lg-12">
+                <div class="card mb-4">
+                    <h2>Sales Chart</h2>
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div> -->
+
+            <!-- Report Summary -->
+                 <div class="col-lg-12">
+                    <div class="card mb-4">
+                        <h2>Report Summary</h2>
+                        <p>Total Sales Count: <%= totalSalesCount %></p>
+                        <p>Total Order Amount: ₹<%= totalOrderAmount.toFixed(2) %></p>
+                        <p>Total Discount: ₹<%= totalDiscount.toFixed(2) %></p>
+                        
+                        <h2>Order Details</h2>
+                        <table class="table table-hover" id="reportsTable">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Delivery Details</th>
+                                    <th>Payment Method</th>
+                                    <th>Total Amount</th>
+                                    <th>Discount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div id="pagination"></div>
+
+        </div> <!-- .row // -->
+            </div> <!-- card body .// -->
+        </div> <!-- card .// -->
+</section> <!-- content-main end// -->
+
+
+    <br><br><br>
+    
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // // Initialize empty chart
+    // let salesChart;
+
+    // function renderSalesChart(salesCount, orderAmount, discount) {
+    //     const ctx = document.getElementById('salesChart').getContext('2d');
+
+    //     // Destroy previous chart if exists
+    //     if (salesChart) {
+    //         salesChart.destroy();
+    //     }
+
+    //     salesChart = new Chart(ctx, {
+    //         type: 'bar', // You can change it to 'line' or 'pie'
+    //         data: {
+    //             labels: ['Sales Count', 'Order Amount', 'Discount'],
+    //             datasets: [{
+    //                 label: 'Sales Metrics',
+    //                 data: [salesCount, orderAmount, discount],
+    //                 backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)'],
+    //                 borderColor: ['rgba(75, 192, 192, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)'],
+    //                 borderWidth: 1
+    //             }]
+    //         },
+    //         options: {
+    //             scales: {
+    //                 y: {
+    //                     beginAtZero: true
+    //                 }
+    //             }
+    //         }
+    //     });
+    // }
+
+    // Handle form submission to fetch data via AJAX and update chart
+    // $(document).ready(function() {
+    //     $('#salesReportForm').submit(function (e) {
+    //         e.preventDefault(); // Prevent form from reloading the page
+            
+    //         const startDate = $('#startDate').val();
+    //         const endDate = $('#endDate').val();
+    //         const period = $('#period').val();
+
+    //         // Make AJAX request to fetch data
+    //         $.ajax({
+    //             url: '/admin/sales-report',
+    //             method: 'GET',
+    //             data: { startDate, endDate, period },
+    //             success: function (response) {
+    //                 // Update the chart with new data
+    //                 renderSalesChart(response.totalSalesCount, response.totalOrderAmount, response.totalDiscount);
+                    
+    //                 // Optionally, update the summary fields if needed
+    //                 $('p:contains("Total Sales Count")').text('Total Sales Count: ' + response.totalSalesCount);
+    //                 $('p:contains("Total Order Amount")').text('Total Order Amount: ₹' + response.totalOrderAmount.toFixed(2));
+    //                 $('p:contains("Total Discount")').text('Total Discount: ₹' + response.totalDiscount.toFixed(2));
+    //             },
+    //             error: function (error) {
+    //                 console.error('Error fetching sales data:', error);
+    //             }
+    //         });
+    //     });
+    // });
+
+    //function to fetch paginated products via AJAX
+    function fetchReports(page = 1){
+        fetch(`/admin/paginate-reports?page=${page}`)
+        .then(response => response.json())        
+        .then( data => {
+            const { reports, currentPage, totalPages } = data;
+        console.log('hello')
+
+            console.log(data)
+            //update table with reports
+            const reportsTableBody = document.querySelector('#reportsTable tbody');
+
+            reportsTableBody.innerHTML = ''//clear exixting rows
+            let reportData = ''
+            if(reports.length>0){
+            for(i=0;i<reports.length; i++){
+                reportData += 
+                                    `<tr>
+                                        <td>${reports[i].orderId}</td>
+                                        <td>${reports[i].deliveryDetails}</td>
+                                        <td class="text-center">${reports[i].paymentMethod}</td>
+                                        <td class="text-end">₹${reports[i].totalAmount.toFixed(2)}</td>
+                                        <td class="text-end">₹${reports[i].discount ? reports[i].discount.toFixed(2) : '0.00'}</td>
+                                        <td class="text-center">${reports[i].status}</td>
+                                        <td>${new Date(reports[i].createdAt).toISOString().slice(0, 10) }</td>
+
+                                    </tr>`
+
+                    }
+            }
+            reportsTableBody.innerHTML += reportData;
+
+            //update pagination controls
+            const pagination = document.getElementById('pagination')
+            pagination.innerHTML = ''
+
+            //create previous button
+            if(currentPage > 1){
+                pagination.innerHTML += `<a href="#" onclick="fetchReports(${currentPage - 1})">Previous </a>`;
+            }
+
+            //create pagenumber links
+            for(let i=1; i<=totalPages; i++ ){
+                pagination.innerHTML += `<a href="#" onclick="fetchReports(${i})" ${i === currentPage ? 'class="active"' : ''}>${i +" "}</a>`;
+            }
+
+            //create next button
+            if(currentPage < totalPages){
+                pagination.innerHTML += `<a href="#" onclick="fetchReports(${currentPage+1})"> Next</a>`;
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching reports', error)
+        })
+    }
+
+    //Fetch the first page of reports when page loaded
+    document.addEventListener('DOMContentLoaded', ()=>{
+        console.log('fetch')
+        fetchReports()
+    })
+</script>
+<%- include('../partials/footer') -%>
+

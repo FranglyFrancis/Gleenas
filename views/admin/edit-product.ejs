@@ -1,0 +1,240 @@
+<%- include('../partials/header.ejs') %>
+<style>
+    *{
+        padding: 0;
+        margin:0;
+        box-sizing: border-box;
+    }
+
+    body{
+        background-color: #f5f8ff;
+    }
+
+    .container{
+        background-color: #ffffff;
+        width: 60%;
+        min-width: 450px;
+        position: relative;
+        margin: 50px auto;
+        padding: 50px 20px;
+        border-radius: 7px;
+        box-shadow: 0 20px 35px rgba(0,0,0,0.05);
+    }
+    input[type="file"]{
+        display: none;
+    }
+    #label{
+        display: block;
+        position:relative;
+        background-color: #02453f;
+        color: #ffffff;
+        font-size:12px;
+        text-align: center;
+        width:200px;
+        padding: 18px 0;
+        margin: auto;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .container p{
+        text-align: center;
+        margin: 20px 0 30px 0;
+        color:black;
+    }
+    #images{
+        width:90%;
+        position: relative;
+        margin: auto;
+        display:flex;
+        justify-content: space-evenly;
+        gap: 20px;
+        flex-wrap: wrap;
+
+    }
+
+    figure{
+        width: 45%;
+    }
+    img{
+        width: 100%;
+    }
+    figcaption{
+        text-align: center;
+        font-size: 2.4vmin;
+        margin-top: 0.5vmin;
+    }
+</style>
+<section class="content-main">
+    <div class="row">
+        <div class="col-9">
+            <div class="content-header">
+                <h2 class="content-title">Edit Product</h2>
+                <div>
+                    <form action="" method="post" enctype="multipart/form-data">
+                    <button class="btn btn-md rounded font-sm hover-up" type="submit">Save</button>
+                </div>
+            </div>
+        </div>
+        <div>
+            <%
+                if(typeof message !== 'undefined' ){
+            %>
+                <p style="color: red"><%= message %></p>
+            <%
+                }
+            %>
+         </div>
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Basic</h4>
+                </div>
+                <div class="card-body">
+
+                        <input type="hidden" name="id" value="<%= product._id %>">
+                        <div class="mb-4">
+                            <label for="product_name" class="form-label">Product name</label>
+                            <input type="text" value="<%= product.name %>" name="name" class="form-control" id="product_name">
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Full description</label>
+                            <input type="text"  value="<%= product.description %>" name="description" class="form-control">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="mb-4">
+                                    <label class="form-label">Quantity</label>
+                                    <div class="row gx-2">
+                                        <input value="<%= product.quantity %>" name="quantity" type="number" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <label class="form-label">Unit</label>
+                                <select name="unit" class="form-select">
+                                    <option> Kg </option>
+                                    <option> g </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="mb-4">
+                                    <label class="form-label">Regular price</label>
+                                    <div class="row gx-2">
+                                        <input placeholder="$" type="number" name="price" min="1" value="<%= product.price %>" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="mb-4">
+                                    <label class="form-label">Discount</label>
+                                    <input name="discount" placeholder="$"  type="number" min="1" max="50"  value="<%= product.discount %>" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="mb-4">
+                                    <label class="form-label">Stock</label>
+                                    <input name="countInStock" placeholder="stock" min="1" value="<%= product.countInStock %>" type="number" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    
+                </div>
+          
+            </div> <!-- card end// -->
+        </div>
+        <div class="col-lg-3">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Media</h4>
+                </div>
+                <div class="card-body">
+                    <div class="input-upload">
+                        <% for(let i=0;i<product.image.length;i++){
+                            %>
+                        <img src="productImages/<%= product.image[i] %>" class="img-sm img-thumbnail" alt="">
+
+                        <%
+                        }
+                        %>
+                        <img src="assets/imgs/theme/upload.svg" alt="">
+                            <input type="file" id="file-input" accept="image/png, image/jpeg" name="image" onchange="preview()" multiple>
+                            <label id="label" for="file-input">
+                                <i class ="fas fa-upload"></i>
+                                &nbsp; choose a photo
+                            </label>
+                            <p id="num-of-files">No of files chosen</p>
+
+                    </div>
+                </div>
+            </div> <!-- card end// -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Organization</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row gx-2">
+                        <div class="col-sm-6 mb-3">
+                            <label class="form-label">Category</label>
+                            <select name="category" class="form-select">
+                                    <option selected> <%= product.category.name %> </option>
+                                    <% if(categories.length>0){
+                                        for(let i=0; i<categories.length; i++){
+                                    %>
+                                        <option name="category" ><%= categories[i].name %> </option>
+                                    <%         
+                                        }
+                                    } 
+                                    %>
+                              
+                            </select>
+                        </div>
+                    </div> <!-- row.// -->
+                </div>
+            </div> <!-- card end// -->
+        </div>
+        <div class="col-lg-3">
+            <div class="card mb-4">
+                <div id="images"></div>
+            </div>
+        </div>
+        <!-- <div class="col-lg-3"></div> -->
+    </form>
+    </div>
+</section> <!-- content-main end// -->
+<script>
+
+    const messageDiv = document.getElementById('message')
+
+
+    let fileInput = document.getElementById("file-input")
+    let imageContainer = document.getElementById("images")
+    let numOfFiles = document.getElementById("num-of-files")
+
+    function preview(){
+        imageContainer.innerHTML = "";
+        numOfFiles.textContent = `${fileInput.files.length}
+        File selected`;
+
+        for(i of fileInput.files){
+            let reader = new FileReader();
+            let figure = document.createElement("figure");
+            let figCap = document.createElement("fidcaption");
+
+            figCap.innerText = i.name;
+            figure.appendChild(figCap)
+            reader.onload =() => {
+                let img = document.createElement("img")
+                img.setAttribute('src',reader.result);
+                figure.insertBefore(img,figCap)
+            }
+            imageContainer.appendChild(figure);
+            reader.readAsDataURL(i)
+        }
+    }
+</script>
+<%- include('../partials/footer.ejs') -%>

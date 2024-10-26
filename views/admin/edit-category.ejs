@@ -1,0 +1,72 @@
+<%- include('../partials/header.ejs') -%>
+
+<!-- Start Content-->
+<div class="container-fluid">
+
+    <!-- start page title -->
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Category Management</a></li>
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Categories</a></li>
+                        <li class="breadcrumb-item active">Edit Category</li>
+                    </ol>
+                </div>
+            </div>
+            <div>
+                <h4 class="page-title">Edit Category</h4>
+            </div>
+        </div>
+    </div>
+    <!-- end page title -->
+    <div>
+        <%
+            if(typeof message !== 'undefined' ){
+        %>
+            <p style="color: red"><%= message %></p>
+        <%
+            }
+        %>
+     </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                   
+                    <div class="tab-content">
+                        <div class="tab-pane show active" id="custom-styles-preview">
+                            <img src="categoryImages/<%= category.image %>" width="100px" height="100px" alt="Image">
+                            <form action="" method="post" enctype="multipart/form-data" class="needs-validation" novalidate="">
+                                <div class="mb-3">
+                                    <label class="form-label" for="validationCustom01">Category name</label>
+                                    <input type="text" class="form-con-trol" name="name" id="validationCustom01" placeholder="First name" value="<%= category.name %>" required="">
+                                    <div class="valid-feedback">
+                                        Looks good!
+                                    </div>
+                                </div>
+
+                                <input type="hidden" name="id" value="<%= category._id %>">
+                                <div class="mb-3">
+                                    <label for="category_name" class="form-label">Discount</label>
+                                    <input type="number" min="0" max="50" placeholder="%" value="<%= category.discount %>" name="discount" class="form-control" id="discount" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" for="validationCustom03">Image</label>
+                                    <input type="file" class="form-control" name="image" id="validationCustom03" required="">
+                                    <div class="valid-feedback">
+                                        Looks good!
+                                    </div>
+                                </div>
+
+                                <button class="btn btn-primary" type="submit">Submit form</button>
+                            </form>
+                        </div> <!-- end preview-->
+                    
+                    </div> <!-- end tab-content-->
+                    
+                </div> <!-- end card-body-->
+            </div> <!-- end card-->
+        </div> <!-- end col-->
+<%- include('../partials/footer.ejs')%>

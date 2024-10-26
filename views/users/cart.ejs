@@ -1,0 +1,362 @@
+<%- include('../partials/user/header') -%>
+
+<main class="main">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/userhome" rel="nofollow">Home</a>
+                <span><a href="/shop" rel="nofollow">Shop</a></span> 
+                <span><a href="/cart" rel="nofollow">Your Cart</a></span> 
+
+            </div>
+        </div>
+    </div>
+    <%
+    if(typeof message !== 'undefined' ){
+    %>
+    <div class="alert alert-success">
+        <p style="color: green"><%= message %></p>
+    </div>
+    <%
+        }
+    %>
+    
+    <section class="mt-50 mb-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                <% if(cartCount > 0){
+                    %>
+                    <div class="table-responsive">
+                        <table class="table shopping-summery text-center clean">
+                            <thead>
+                                <tr class="main-heading">
+                                    <th scope="col">Image</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Quantity</th>
+                                    <!-- <th scope="col">Subtotal</th> -->
+                                    <th scope="col">Remove</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <%
+                                if(cart){
+                                    for(i=0; i<cart.length; i++){
+                                %>
+                                <tr>
+                                    
+                                    <td class="image product-thumbnail"><img src="productImages/<%= cart[i].product.image[0] %>" alt="#"></td>
+                                    <td class="product-des product-name">
+                                        <h5 class="product-name"><a href="shop-product-right.html"><%= cart[i].product.name %> <%= cart[i].product.quantity %> <%= cart[i].product.unit %></a></h5>
+                                        <p class="font-xs"></p>
+                                    </td>
+                                    <td class="price" data-title="Price" id="<%= cart[i].product.price %>"><span><%= (subtotal[i].orders[0].subtotal).toFixed(2) %></span></td>
+                                    <td class="text-center" data-title="Stock"> 
+                                        <button class="btn btn-sm" onclick="changeQuantity('<%= user._id %>','<%= cart[i]._id %>','<%= cart[i].product._id %>','<%= cart[i].product.countInStock %>','<%= cart[i].product.maxLimit %>','<%= cart[i].product.price %>',-1)">-</button>
+                                        <span id="<%= cart[i].product._id %>"><%= cart[i].quantity %></span>
+                                        <button class="btn btn-sm" onclick="changeQuantity('<%= user._id %>','<%=cart[i]._id %>','<%= cart[i].product._id %>','<%= cart[i].product.countInStock %>','<%= cart[i].product.maxLimit %>','<%= cart[i].product.price %>',1)">+</button>       
+                                    </td>
+                                    <td class="action" data-title="Remove"><button type="button" class=" btn-danger"  onclick="removeItem('<%=cart[i].product._id %>','<%= cart[i]._id %>')"><i class="fi-rs-trash"></i></button></td>
+                                   
+                                </tr>
+                               <% 
+                            }
+                        }
+                               %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="divider center_icon mt-50 mb-50"><i class="fi-rs-fingerprint"></i></div>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-6" >
+                                <div class="toggle_info">
+                                    <span><i class="fi-rs-label mr-10"></i><span class="text-muted">Have a coupon?</span> <a href="#coupon" data-bs-toggle="collapse" class="collapsed" aria-expanded="false">Click here to enter your code</a></span>
+                                </div>
+                                <div class="panel-collapse collapse coupon_form " id="coupon">
+                                    <div class="panel-body">
+                                        <span><p class="mb-30 font-sm">If you have a coupon code, please apply it below.
+                                            <div class="applied-coupon" id="appliedCoupon">
+                                                <span id="appliedCouponCode"></span>
+                                                <div class="form-group">
+                                                    <button id="remove" class="remove-coupon-btn btn  btn-sm" style="margin-left: 465px;" onclick="removeCoupon()">Remove</button>
+                                                </div>
+                                            </div>
+
+                                        <form id="couponForm">
+                                            <div class="form-group">
+                                                <input type="text" id="couponCode" name="code" placeholder="Enter Coupon Code...">
+                                            </div>
+                                            <div class="form-group">
+                                                <button class="btn  btn-md" type="submit" id="apply" name="login">Apply Coupon</button>
+                                            </div>
+                                        </form>
+                                        <div id="result"></div>
+                                    </div>
+                                    
+                                </div>
+                                
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="border p-md-4 p-30 border-radius cart-totals">
+                                    <div class="heading_s1 mb-3">
+                                        <h4>Cart Totals</h4>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="cart_total_label">Cart Subtotal</td>
+                                                    <td class="cart_total_amount" id="subtotal"><span  class="font-lg fw-900 text-brand">र<%= total %></span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="cart_total_label">Shipping</td>
+                                                    <td class="cart_total_amount"> <i class="ti-gift mr-5"></i> Free Shipping</td>
+                                                </tr>
+                                            
+                                                <tr>
+                                                    
+                                                    <td class="cart_total_label">Discount</td>
+                                                
+                                                    <%
+                                                    if(cart){
+                                                        let discountTotal = 0
+                                                        for(i=0; i<cart.length; i++){
+                                                        
+                                                            discountTotal = discountTotal + ((subtotal[i].orders[0].subtotal) * cart[i].product.discountApplied * 0.01)
+                                                            
+                                                        }
+                                                        console.log("total",discountTotal)
+
+                                                    %>
+                                                    <td class="cart_total_amount" id="discount"><i class="ti-gift mr-5"></i><%= discountTotal.toFixed(2) %></td>
+                                                </tr>
+                                                <%
+                                                    let totalSum = (total - discountTotal).toFixed(2) 
+                                                    if(totalSum > 200){
+                                                        %>
+                                                        <div class="alert alert-success">
+                                                            <p style="color: green">Congratulations!!!!You're eligible for a coupon, couponCode: <%= coupon[0].couponCode %></p>
+                                                        </div>
+                                                    <%
+                                                    }
+                                                    %>
+                                                <!-- <tr>
+                                                    <td class="cart_total_label">Coupon Applied</td>
+                                                    <td class="cart_total_amount" id="resultDis"> <i class="ti-gift mr-5"> %</i> </td>
+                                                </tr> -->
+                                                
+                                                <tr>
+                                                    <td class="cart_total_label">Total</td>
+                                                    
+                                                    <td class="cart_total_amount"><strong>र <span id="total" class="font-xl fw-900 text-brand"><%= totalSum  %></span></strong></td>
+                                                </tr>
+                                                <%
+                                            }
+                                                %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <a href="/proceed-to-checkout" class="btn "> <i class="fi-rs-box-alt mr-10"></i> Proceed To CheckOut</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <%
+               
+                }else{
+                    %>
+
+                    <h2>Cart is empty</h2>
+                    <div class="cart-action text-end">
+                        <a class="btn" href="/userhome"><i class="fi-rs-shopping-bag mr-10" ></i>Continue Shopping</a>
+                    </div>
+
+                    <%
+                }
+                %>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+<script>
+
+    function changeQuantity(userId,cartId,proId,stock,maxLimit,prodPrice,count){
+        let quantity = parseInt(document.getElementById(proId).innerHTML)
+        console.log(userId,cartId,proId,stock,maxLimit,count)
+        count = parseInt(count)
+
+        $.ajax({
+            
+            url:'/change-product-quantity',
+            data:{
+                userId:userId,
+                cartId:cartId,
+                productId:proId,
+                stock:stock,
+                maxLimit:maxLimit,
+                count:count,
+                quantity:quantity
+            },
+            method:'post',
+            success:(res)=>{
+               if (res.removeProduct) {
+                 swal("Product is removed from cart")
+                 location.reload()
+            }
+               else {
+                    let currQuantity = res.updateQuantity
+                    console.log("current",currQuantity)
+                    console.log("dis",res.discount)
+
+                    if(!res.outOfStock){
+                        if(!res.maxBuyingLimit){
+                            document.getElementById('subtotal').innerHTML = res.total
+                            document.getElementById(proId).innerHTML = currQuantity
+                            document.getElementById('total').innerHTML = res.distotal 
+                            document.getElementById('discount').innerHTML = res.discount
+                            console.log(res.prodPrice)
+                            document.getElementById(prodPrice).innerHTML = res.prodPrice
+                        }else{
+                            swal("Buying limit is reached")
+                        }
+                    }else{
+                        swal("Product is out of stock")
+                    }
+
+                }
+                
+                // document.getElementById(proId).innerHTML = quantity + count
+                // console.log("hellooooo")
+                // document.getElementById('total').innerHTML = res.total  
+                
+                //Find subtotal
+                // let subtotal = res.sub
+                // let cartLength = res.cartLength
+                // for(let i=0; i<cartLength; i++){  
+                //     document.getElementById('subtotal').innerHTML =  subtotal[i].orders[0].subtotal      
+                // }
+                             
+                
+            
+            }
+        })
+    }
+
+    function removeItem(proId,cartId){
+        $.ajax({
+
+            url:'/remove-item',
+            data: {
+                    productId:proId,
+                    cartId:cartId,
+
+            },
+            method:'post',
+            success:(res)=>{
+                location.reload()
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX error', status, error)
+                alert('An error occurred while removing item')
+            }
+            
+
+        })
+    }
+
+//------------Add Coupon code-------------
+    document.getElementById('couponForm').addEventListener('submit', async function (event) {
+      event.preventDefault()  
+
+      const couponCode = document.getElementById('couponCode').value
+      let total = document.getElementById('total').textContent
+      let discount = document.getElementById('discount').textContent
+      discount>0 ? discount : 0
+        discount = parseFloat(discount)
+        total = parseFloat(total)
+      console.log(discount)
+
+      try {
+
+        const response = await fetch('/verify-coupon',{
+            method: 'post',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code: couponCode, total:total, discount:discount })
+        })
+
+        const result = await response.json()
+
+        if (response.ok) {
+            document.getElementById('result').innerText = `Success: ${result.message}, Discount: ${result.discount}%`
+            // document.getElementById('resultDis').innerText = ` ${result.discount}`
+            document.getElementById('discount').innerHTML = `${result.discountPrice}`
+            document.getElementById('total').innerHTML = `${result.total}`
+            document.getElementById('apply').disabled = true
+            document.getElementById('remove').disabled = false
+
+
+        } if(!result.success) {
+            document.getElementById('remove').disabled = true
+            document.getElementById('apply').disabled = false
+            document.getElementById('discount').innerHTML = `${result.discount}`
+            document.getElementById('total').innerHTML = `${result.total}`
+            document.getElementById('result').innerText = `${result.message}`
+        }
+        
+      } catch (error) {
+        document.getElementById('result').innerText = 'An error occurred while verifying the coupon';
+      }
+    })
+
+
+// -------------Remove coupon----------
+
+async function removeCoupon() {
+    try {
+    const couponCode = document.getElementById('couponCode').value
+    let total = document.getElementById('total').textContent
+    let discount = document.getElementById('discount').textContent
+      discount>0 ? discount : 0
+        discount = parseFloat(discount)
+        total = parseFloat(total)
+
+    //AJAX request to remove coupon
+    const response = await fetch('/remove-coupon', {
+        method: 'POST',
+        headers: {
+                        'Content-Type': 'application/json',
+                    },
+        body: JSON.stringify({
+                        code: couponCode, total:total, discount:discount // Replace with the actual user ID from your server
+        }),
+    });
+    
+    const result = await response.json();
+    if (response.ok) {
+            document.getElementById('remove').disabled = true
+            document.getElementById('couponCode').value = ""
+            document.getElementById('apply').disabled = false
+            document.getElementById('result').innerText = `${result.message}`  
+            document.getElementById('discount').innerHTML = `${result.newDiscount}`
+            document.getElementById('total').innerHTML = `${result.newTotal}`
+            
+        }if(!result.success){
+            document.getElementById('remove').disabled = false
+            document.getElementById('couponCode').value = ""
+            document.getElementById('apply').disabled = true
+            document.getElementById('discount').innerHTML = `${result.newDiscount}`
+            document.getElementById('total').innerHTML = `${result.newTotal}`
+            // document.getElementById('result').innerText = `Error: ${result.message}`  
+        }
+    }
+    catch (error) {
+        alert('An error occurred while removing the coupon.');
+    }
+}
+
+
+</script>
+<%- include('../partials/user/footer') -%>

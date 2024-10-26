@@ -1,0 +1,208 @@
+<%- include('../partials/user/header') -%>
+
+<main class="main">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="index.html" rel="nofollow">Home</a>
+                <span></span> Shop
+                <span></span> Wishlist
+            </div>
+        </div>
+    </div>
+    <%
+    if(typeof message !== 'undefined' ){
+    %>
+    <div class="alert alert-success">
+        <p style="color: green"><%= message %></p>
+    </div>
+    <%
+        }
+    %>
+    <section class="mt-50 mb-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="table-responsive">
+                        <% if(wishlistCount>0){
+                            for(i=0; i<wishlistCount; i++){
+                            %>
+                        <table class="table shopping-summery text-align-left table-borderless">
+                            <thead>
+                                <tr class="main-heading">
+                                    <th scope="col" colspan="2">Product</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Stock Status</th>
+                                    <th scope="col">Action</th>
+                                    <th scope="col">Remove</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                               
+                                <tr remove-id = "'<%= i %>'">
+                                    <td class="image product-thumbnail"><img src="productImages/<%=wishListItems[i].product.image[0] %>" alt="#"></td>
+                                    <td class="product-des product-name">
+                                        <h5 class="product-name"><a href="shop-product-right.html"><%= wishListItems[i].product.name %></a></h5>
+                                        <p class="font-xs"><%= wishListItems[i].product.description %><br>
+                                        </p>
+                                    </td>
+                                    <td class="price" data-title="Price"><span><%=wishListItems[i].product.price %></span></td>
+                                    <td class="text-center" data-title="Stock">
+                                        <% if(wishListItems[i].product.countInStock > 0 ){ 
+                                        %>
+                                        <span class="color3 font-weight-bold">In stock</span>
+                                    </td>
+                                    <td class="text-right" data-title="Cart">
+                                        <button class="btn btn-sm" onclick = "addToCart('<%= wishListItems[i].product._id %>')"><i class="fi-rs-shopping-bag mr-5"></i>Move to cart</button>
+                                    </td>
+                                        <%
+                                        }else{
+                                            %>
+                                        <span class="text-danger font-weight-bold ">Out of stock</span>
+                                    </td>
+                                    <td class="text-right" data-title="Cart">
+                                        <button class="btn btn-sm disabled" onclick = "addToCart('<%= wishListItems[i].product._id %>')"><i class="fi-rs-shopping-bag mr-5"></i>Move to cart</button>
+                                    </td>
+                                    <% }
+                                        %>
+                                    <td class="action"  data-title="Remove">
+                                        <button type="button" class=" btn-danger" onclick="removeItem('<%= wishListItems[i].product._id %>','<%= wishListItems[i]._id %>')"><i class="fi-rs-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <%
+                            }
+                        }else{
+                            %>
+                            <h2>Wishlist is empty</h2>
+                            <%
+                        } 
+
+                                %>
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+<script>
+    //----------- Move to cart-------
+    function addToCart(prodId){
+        console.log("button clicked")
+       $.ajax({
+       url:`/movetocart?id=${prodId}`,
+       method:'get',
+       success:(response)=>{
+        let cartNumber, wishlistNumber
+        let cartValue, wishlistValue
+        if(!response.update){
+            cartNumber = document.getElementById('cartcount').innerHTML
+            cartValue = parseInt(cartNumber) + 1
+            console.log(cartValue)
+
+            //get wishlistCount
+            wishlistNumber = document.getElementById('wishlistCount').innerHTML
+            wishlistValue = parseInt(wishlistNumber) - 1
+            console.log(cartValue)
+               
+            //update cart and wishlist count
+                document.getElementById('cartcount').innerHTML = cartValue
+                document.getElementById('wishlistCount').innerHTML = wishlistValue
+                swal('Product is already in cart')
+                location.reload()
+        }else{
+            cartNumber = document.getElementById('cartcount').innerHTML
+            cartValue = parseInt(cartNumber) + 1
+            console.log(cartValue)
+
+            //update wishlistCount
+            wishlistNumber = document.getElementById('wishlistCount').innerHTML
+            wishlistValue = parseInt(wishlistNumber) - 1
+            swal('Product is moved to cart')
+            location.reload()
+
+           
+        }
+        
+       },
+       error: (jqXHR, textStatus,errorThrown) => {
+        console.log(textStatus, errorThrown)
+       }
+      })
+}
+
+
+
+function removeItem(proId,wishlistId){
+        $.ajax({
+
+            url:'/remove-item-wishlist',
+            data: {
+                    productId:proId,
+                    wishlistId:wishlistId,
+
+            },
+            method:'post',
+            success:(res)=>{
+                location.reload()
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX error', status, error)
+                alert('An error occurred while removing item')
+            }
+            
+
+        })
+    }
+
+//remove product from wishlist using Ajax
+// document.addEventListener('DOMContentLoaded', ()=>{
+//     //get all buttons to remove
+//     const removeButtons = document.querySelectorAll('.remove-item')
+// console.log(removeButtons)
+//     removeButtons.forEach(button => {
+//         button.addEventListener('click', ()=>{
+//             console.log(button)
+//             //get parent element and Id
+//            // Traverse the DOM to find the parent <tr> element
+//             let rowElement = this.parentElement;  // Start with the <td> element
+//             while (rowElement && rowElement.tagName !== 'TR') {
+//                 rowElement = rowElement.parentElement;  // Keep going up the DOM until you find the <tr>
+//             }
+//             console.log(rowElement)
+
+//             // Get the item ID from the <tr> element
+//                 const itemId = rowElement.getAttribute('data-item-id');
+
+//             //send an Ajax request using fetch
+//             fetch('/remove-item-wishlist',{
+//                 method: 'post',
+//                 headers:{
+//                     'Content-Type': 'application/json'
+//                 },
+//                 body: JSON.stringify({ itemId: itemId })
+//             })
+//             .then(response => response.json())
+//             .then(data => {
+//                 if(data.success){
+//                     itemElem.remove()
+//                 }else{
+//                     alert("failed")
+//                 }
+//             })
+//             .catch(error => {
+//                 console.log('Error removing item', error)
+//                 alert('Error removing')
+//             })
+//         })
+//     })
+// })
+
+
+
+</script>
+
+<%- include('../partials/user/footer') -%>

@@ -1,0 +1,48 @@
+
+<%- include('../partials/header') -%>
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Categories </h2>
+            <p>Add, edit or delete a category</p>
+        </div>
+        <div>
+            <input type="text" placeholder="Search Categories" class="form-control bg-white">
+        </div>
+    </div>
+    <div>
+        <%
+            if(typeof message !== 'undefined' ){
+        %>
+            <p style="color: red"><%= message %></p>
+        <%
+            }
+        %>
+     </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="row">   
+                <div class="col-md-3">
+                    <form action="" method="post" enctype="multipart/form-data" class="needs-validation" novalidate="">
+                        <div class="mb-4">
+                            <label for="category_name" class="form-label">Name</label>
+                            <input type="text" placeholder="Type here" name="name" class="form-control" id="product_name" required />
+                        </div>
+                        <div class="mb-4">
+                            <label for="category_name" class="form-label">Discount</label>
+                            <input type="number" min="0" placeholder="Type here" max="50" name="discount" class="form-control" id="discount" />
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Upload Image</label>
+                            <input type="file" class="form-control" name="image" required="">
+                        </div>
+                        <div class="d-grid">
+                            <button class="btn btn-primary">Create category</button>
+                        </div>
+                    </form>
+                </div>
+            </div> <!-- .row // -->
+        </div> <!-- card body .// -->
+    </div> <!-- card .// -->
+</section> <!-- content-main end// -->
+<%- include('../partials/footer') -%>

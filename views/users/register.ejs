@@ -1,0 +1,74 @@
+<%- include('../partials/notUser/header') -%>
+
+    <main class="main">
+       
+        <section class="pt-20 pb-20">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-10 m-auto">
+                        <div class="row">
+                            <div class="col-lg-1"></div>
+                            <div class="col-lg-6">
+                                <div class="login_wrap widget-taber-content p-30 background-white border-radius-5">
+                                    <div class="padding_eight_all bg-white">
+                                        <div class="text-center">
+                                            <img src="user_assets/assets/imgs/theme/gleenas.png" alt="logo" class="" style="height: 50px; width: 100px;">
+                                        </div>
+                                        <br>
+                                        <div>
+                                            <%
+                                            if(typeof message !== 'undefined' ){
+                                        %>
+                                        <div class="alert alert-success">
+                                            <p style="color: green"><%= message %></p>
+                                        </div>
+                                        <%
+                                            }
+                                        %>
+                                        </div>
+                                            
+                                       
+                                        <div class="heading_s1">
+                                            <h3 class="mb-25">Create an Account</h3>
+                                        </div>
+                                        
+                                        <form method="post">
+                                            <div class="form-group">
+                                                <input type="text" required="" class="form-control" name="name" placeholder="Username">
+                                            </div>
+                                            <div class="form-group">
+                                                <input type="text" required="" class="form-control" name="email" placeholder="Email">
+                                            </div>
+                                            <div class="form-group">
+                                                <input required="" type="password" class="form-control" name="password" placeholder="Password">
+                                            </div>
+                                            <!-- <div class="form-group">
+                                                <input required="" type="password" name="password" placeholder="Confirm password">
+                                            </div> -->
+                                            <div class="login_footer form-group">
+                                                <div class="chek-form">
+                                                    <label class="form-check-label font-xs" for="exampleCheckbox12"><span>By continuing, you agree to Gleena's Conditions of use and Privacy policy.</span></label>
+                                                </div>
+                                                <!-- <a href="page-privacy-policy.html"><i class="fi-rs-book-alt mr-5 text-muted"></i>Lean more</a> -->
+                                            </div>
+                                            <div class="form-group" style="text-align: center;">
+                                                <button type="submit" class="btn btn-fill-out btn-block hover-up" name="login">Register</button>
+                                            </div>
+                                        </form>
+                                        <br><br>
+                                        <div class="divider-text-center mt-15 mb-15">
+                                            <span> or</span>
+                                        </div>
+                                       
+                                        <div class="text-muted text-center font-xs">Already have an account? <a href="/login">Sign in now</a></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+<%- include('../partials/notUser/footer') %>

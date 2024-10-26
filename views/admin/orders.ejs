@@ -1,0 +1,144 @@
+<%- include('../partials/header') -%>
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Order List </h2>
+            <p>Lorem ipsum dolor sit amet.</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card mb-4">
+                <header class="card-header">
+                    <div class="row gx-3">
+                        <!-- <div class="col-lg-4 col-md-6 me-auto">
+                            <input type="text" placeholder="Search..." class="form-control">
+                        </div>
+                        <div class="col-lg-2 col-md-3 col-6">
+                            <label for="sortBy">Sort By</label>
+                            <select id="sortBy" name="sortBy" class="form-select">
+                                <option value="pending">pending</option>
+                                <option value="cancelled">cancelled</option>                     
+                                <option value="placed">placed</option>
+                                <option value="delivered">delivered</option>
+                            </select>
+                        </div> -->
+                        <!-- <div class="col-lg-2 col-md-3 col-6">
+                            <select class="form-select">
+                                <option>Show 20</option>
+                                <option>Show 30</option>
+                                <option>Show 40</option>
+                            </select>
+                        </div> -->
+                    </div>
+                </header> <!-- card-header end// -->
+                <div class="card-body" >
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="ordersTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <!-- <th>Customer name</th> -->
+                                    <th>Price</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th class="text-end"> Action </th>
+                                </tr>
+                            </thead>
+                            <tbody >
+                                <!-- Orders will be inserted via AJAX -->
+                            </tbody>
+                        </table>
+                    </div> <!-- table-responsive //end -->
+                <div id="pagination"></div>           
+                </div> <!-- card-body end// -->
+            </div> <!-- card end// -->
+        </div>     
+    </div>
+    
+</section> <!-- content-main end// -->
+<%- include('../partials/footer') -%>
+
+<script>
+    // Function to fetch paginated orders via AJAX
+    function fetchOrders(page = 1) {
+      fetch(`/admin/paginate-orders?page=${page}`)
+        .then(response => response.json())
+        .then(data => {
+          const { orders, currentPage, totalPages } = data;
+            console.log(data)
+          // Update the table with orders
+          const ordersTableBody = document.querySelector('#ordersTable tbody');
+          ordersTableBody.innerHTML = ''; // Clear existing rows
+          let orderData = ''
+            for(i=0; i<orders.length; i++){
+                orderData += `<tr>
+                                    <td>${orders[i]._id}</td>
+                                    <td>${orders[i].totalAmount}</td>
+                                    ${orders[i].status === 'pending' ?
+                                    `<td>
+                                        <a href="/admin/pending-order?id=${orders[i]._id}">
+                                            <span class="badge rounded-pill alert-warning">${orders[i].status}</span>
+                                        </a>
+                                    </td>` : `<span></span>`}
+                                    ${orders[i].status === 'cancelled' || orders[i].status === 'returned' ? 
+                                    `<td>
+                                        <a href="/admin/pending-order?id=${orders[i]._id}">
+                                        <span class="badge rounded-pill alert-danger ">${orders[i].status}</span>
+                                    </td>`
+                                    :  `<span></span>`}
+                                    ${orders[i].status === 'placed' || orders[i].status === 'delivered'?
+                                    `<td>
+                                        <a href="/admin/pending-order?id=${orders[i]._id}">
+                                        <span class="badge rounded-pill alert-success">${orders[i].status}</span>
+                                    </td>`:`<span></span>` }
+                                    <td>${new Date(orders[i].createdAt).toISOString().slice(0, 10)}</td>
+                                    <td class="text-end">
+                                        <a href="/admin/order-detail?id=${orders[i].orderId}" class="btn btn-md rounded font-sm">Detail</a>
+                                        <div class="dropdown">
+                                            <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item" href="#">View detail</a>
+                                                <a class="dropdown-item" href="#">Edit info</a>
+                                                <a class="dropdown-item text-danger" href="#">Delete</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>`;
+            }
+            ordersTableBody.innerHTML += orderData;
+        // Update pagination controls
+        const pagination = document.getElementById('pagination');
+          pagination.innerHTML = ''; // Clear existing pagination
+
+          // Create "Previous" button
+          if (currentPage > 1) {
+            console.log(currentPage)
+            pagination.innerHTML += `<a href="#" onclick="fetchOrders(${currentPage - 1})">Previous</a>`;
+          }
+
+          // Create page number links
+          for (let i = 1; i <= totalPages; i++) {
+            pagination.innerHTML += `
+              <a href="#" onclick="fetchOrders(${i})" ${i === currentPage ? 'class="active"' : ''}>
+                ${i}
+              </a>
+            `;
+          }
+
+          // Create "Next" button
+          if (currentPage < totalPages) {
+
+            pagination.innerHTML += `<a href="#" onclick="fetchOrders(${currentPage + 1})">Next</a>`;
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching orders:', error);
+        });
+    }
+
+    // Fetch the first page of orders when the page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchOrders();
+    });
+</script>

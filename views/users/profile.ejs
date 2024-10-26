@@ -1,0 +1,508 @@
+<%- include('../partials/user/header') -%>
+<main class="main">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/userhome" rel="nofollow">Home</a>
+                <a href="/profile" rel="nofollow">Profile</a>
+            </div>
+        </div>
+    </div>
+<section class="content-main">
+    <div class="card mb-4">
+        
+        <div class="card-body">
+            <div class="row">
+                <!-- <div class="col-xl col-lg flex-grow-0" style="flex-basis:230px">
+                    <div class="img-thumbnail shadow w-100 bg-white position-relative text-center" style="height:190px; width:200px; margin-top:-120px">
+                        <%
+                        if(user.image === ""){
+                            %>
+                            <i class="fi-rs-user"></i>
+                        <%
+                    }else{
+                        if(user.googleId){
+                            %>
+                           <img src="<%= user.image %>" alt="user-im" class="img-fluid" id= "googleImg" width="100%"> 
+                       <%}
+                       else{
+                           %>
+                           <img src="userImages/<%= user.image %>" alt="user-image"  class="img-fluid" id="userImg" width="100%" > 
+                       
+                   <%
+                       }
+                    }
+                    %>
+                    </div>
+                    <form action="" enctype="multipart/form-data" method="post">
+                        <input class="form-control" type="file" id="image" name="image" value="userImages/<%= user.image %>" required="">
+                        <button  class="btn btn-sm rounded font sm btn-brand" style="float: right;">
+                            <i class="material-icons md-edit"></i>Edit
+                        </button>
+                    </form>
+                   
+                </div> -->
+                 <!--  col.// -->
+                    
+                <div class="col-xl col-lg">
+                    <h3><%= user.name %></h3>
+                    <p><%= user.email %></p>
+                </div> <!--  col.// -->
+               
+            </div> <!-- card-body.// -->
+        </div>    
+</section>
+        <section class="pt-50 pb-50">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-10 m-auto">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="dashboard-menu">
+                                    <ul class="nav flex-column" role="tablist">
+                                        <li class="nav-item">
+                                            <a class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" href="#dashboard" role="tab" aria-controls="dashboard" aria-selected="false"><i class="fi-rs-settings-sliders mr-10"></i>Dashboard</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="orders-tab" data-bs-toggle="tab" href="#orders" role="tab" aria-controls="orders" aria-selected="false"><i class="fi-rs-shopping-bag mr-10"></i>Orders</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="wallet-tab" data-bs-toggle="tab" href="#wallet" role="tab" aria-controls="orders" aria-selected="false"><i class="fi-rs-shopping-bag mr-10"></i>Wallet</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="address-tab" data-bs-toggle="tab" href="#address" role="tab" aria-controls="address" aria-selected="true"><i class="fi-rs-marker mr-10"></i>My Address</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="account-detail-tab" data-bs-toggle="tab" href="#account-detail" role="tab" aria-controls="account-detail" aria-selected="true"><i class="fi-rs-user mr-10"></i>Account details</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="/logout"><i class="fi-rs-sign-out mr-10"></i>Logout</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="tab-content dashboard-content">
+                                    <div class="tab-pane fade active show" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5 class="mb-0">Hello <%= user.name %>! </h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <p>From your account dashboard. you can easily check &amp; view your <a href="#">recent orders</a>, manage your <a href="#">shipping and billing addresses</a> and <a href="#">edit your password and account details.</a></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5 class="mb-0">Your Orders</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="table-responsive">
+                                                    <table class="table" id="ordersTable">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>OrderID</th>
+                                                                <th>Total</th>
+                                                                <th>Status</th>
+                                                                <th>Date</th>
+                                                                <th>Actions</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <%
+                                                            if(orders.length>0){
+                                                                orders.forEach((order =>{
+                                                            %>
+                                                            <tr>
+                                                                <td><%= order._id %></td>
+                                                                <td><%= order.createdAt %></td>
+                                                                <td><%= order.status %></td>
+                                                                <td><%= order.totalAmount %></td>
+                                                                <td><a href="/view-order?id=<%= order._id %>" class="btn-small d-block">View <%= order._id %></a></td>
+                                                            </tr>
+                                                            <%         
+                                                                 }))
+                                                            }
+                                                            %>
+                                                            <!-- Orders will be inserted via AJAX -->
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        <div id="pagination" class="pagination"></div>           
+
+                                        </div>
+                                    </div>
+
+                                    <div class="tab-pane fade" id="wallet" role="tabpanel" aria-labelledby="wallet-tab">
+                                        <main>
+                                            <%
+                                            if(wallet){
+                                                %>
+                                                <section class="wallet-balance">
+                                                    <h2>Wallet Balance</h2>
+                                                    <p>₹<span id="walletBalance"><strong><%= wallet.balance %></strong></span></p>
+                                                </section>
+                                        <br><br>
+                                        
+                                                <section class="transaction-history">
+                                                    <h4>Transaction History</h4>
+                                                    <table>
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Order ID</th>
+                                                                <!-- <th>Type</th> -->
+                                                                <th>Amount</th>
+
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <% 
+                                                            for(i=0;i<wallet.orders.length;i++){
+                                                                %>
+                                                            <tr>
+                                                                <td><%= wallet.orders[i].orderId %></td>
+                                                                <td><%= wallet.orders[i].amount %></td>
+                                                            </tr>
+                                                           <%
+                                                        }
+                                                           %>
+                                                        </tbody>
+                                                    </table>
+                                                </section>
+                                        
+                                            <%
+                                            }else{
+                                                %>
+                                                <section class="wallet-balance">
+                                                    <h2>Wallet Balance</h2>
+                                                    <p>₹<span id="walletBalance">0</span></p>
+                                                </section>
+                                            <%
+                                            }
+                                            %>
+                                            
+                                        </main>
+                                    </div>
+                                    <!-- <div class="tab-pane fade" id="track-orders" role="tabpanel" aria-labelledby="track-orders-tab">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5 class="mb-0">Orders tracking</h5>
+                                            </div>
+                                            <div class="card-body contact-from-area">
+                                                <p>To track your order please enter your OrderID in the box below and press "Track" button. This was given to you on your receipt and in the confirmation email you should have received.</p>
+                                                <div class="row">
+                                                    <div class="col-lg-8">
+                                                        <form class="contact-form-style mt-30 mb-50" action="#" method="post">
+                                                            <div class="input-style mb-20">
+                                                                <label>Order</label>
+                                                                <input name="order-id" placeholder="Found in your order confirmation email" type="text" class="square">
+                                                            </div>
+                                                            <div class="input-style mb-20">
+                                                                <label>Billing email</label>
+                                                                <input name="billing-email" placeholder="Email you used during checkout" type="email" class="square">
+                                                            </div>
+                                                            <button class="submit submit-auto-width" type="submit">Track</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div> -->
+                                    <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab">
+                                        <%
+                                            if(user.addressIds.length>0){
+                                                  
+                                        %>
+                                        <div class="card-header">
+                                            All addresses
+                                          </div>
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <div class="card mb-3 mb-lg-0">
+                                                    <div class="card-header">
+                                                        <h5 class="mb-0">Billing Address</h5>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <address><%= addresses[0].address %>,<br> <%= addresses[0].city %>,<br><%= addresses[0].state %>, <br><%= addresses[0].pin %>,</address>
+                                                        <!-- <p>New York</p> -->
+                                                        <a href="#" class="btn-small">Edit</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h5 class="mb-0">Shipping Address</h5>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <address><%= addresses[0].address %>,<br> <%= addresses[0].city %>,<br><%= addresses[0].state %>, <br><%= addresses[0].pin %>,</address>
+                                                        <a href="#" class="btn-small">Edit</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <%
+                                            for(i=1; i<user.addressIds.length; i++){
+                                                %>
+                                                <div class="col-lg-6">
+                                                    <div class="card">
+                                                        <div class="card-header">
+                                                            <h5 class="mb-0">Address <%= i%> </h5>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <address><%= addresses[i].address %>,<br> <%= addresses[i].city %>,<br><%= addresses[i].state %>, <br><%= addresses[i].pin %>,</address>
+                                                            <a href="#" class="btn-small">Edit</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <%
+                                            }
+                                            %>
+                                               
+                                                <div class="card-body">
+                                                    <form action="" id="newAddress-form" method="post">
+                                                        <div class="ship_detail">
+                                                            
+                                                            <div>
+                                                                <div class="form-group">
+                                                                    <div class="chek-form">
+                                                                        <div class="custome-checkbox">
+                                                                            <input class="form-check-input" type="checkbox" name="checkbox" id="differentaddress">
+                                                                            <label class="form-check-label label_info" data-bs-toggle="collapse" data-target="#collapseAddress" href="#collapseAddress" aria-controls="collapseAddress" for="differentaddress"><span>Add new address</span></label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div id="collapseAddress" class="different_address collapse in">
+                                                                    
+                                                                    <div class="form-group">
+                                                                        <input type="text" name="address" id="address1" required="" placeholder="Address *">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <input required="" type="text" name="city" id="city" placeholder="City / Town *">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <input required="" type="text" name="state" id="state" placeholder="State / County *">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <input required="" type="number" name="pincode" id="pin" placeholder="Postcode / ZIP *">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <button type="submit" onclick="addAddress()" class="btn btn-fill-out btn-block mt-30">Add address</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div> 
+                                                    </form>
+                                                </div>
+                                            
+                                        </div>
+                                        <%         
+                                                }
+                                        else{
+                                            %>
+                                            <form action="" id="newAddress-form" method="post">
+                                                <div class="ship_detail">
+                                                    
+                                                    <div>
+                                                        <div>
+                                                            <button type="submit" onclick="addAddress()" class="btn btn-fill-out btn-block mt-30">Add address</button>
+                                                        </div>
+                                
+                                                        <div class="form-group">
+                                                            <input type="text" name="address" id="address1" required="" placeholder="Address *">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <input required="" type="text" name="city" id="city" placeholder="City / Town *">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <input required="" type="text" name="state" id="state" placeholder="State / County *">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <input required="" type="text" name="pincode" id="pin" placeholder="Postcode / ZIP *">
+                                                        </div>
+                                                    </div>
+                                                </div> 
+                                            </form>
+                                            <%
+                                                }
+                                            %>
+                                    </div>
+                                    <div class="tab-pane fade" id="account-detail" role="tabpanel" aria-labelledby="account-detail-tab">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5>Account Details</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <!-- <p>Already have an account? <a href="page-login-register.html">Log in instead!</a></p> -->
+                                                <form action="" method="post" name="enq">
+                                                    <div class="row">
+                                                        <div class="form-group col-md-12">
+                                                            <label>Full Name <span class="required">*</span></label>
+                                                            <input  class="form-control square" value="<%= user.name %>" name="name" type="text" disabled>
+                                                        </div>
+                                                        <!-- <div class="form-group col-md-6">
+                                                            <label>Last Name <span class="required">*</span></label>
+                                                            <input required="" class="form-control square" name="phone">
+                                                        </div> -->
+                                                     
+                                                        <div class="form-group col-md-12">
+                                                            <label>Email Address <span class="required">*</span></label>
+                                                            <input class="form-control square" value="<%= user.email %>" name="email" type="email" disabled>
+                                                        </div>
+                                                        <div class="form-group col-md-12">
+                                                            <label>Mobile Number <span class="required">*</span></label>
+                                                            <input required="" class="form-control square" value="<%= user.mobno %>" name="password" type="password">
+                                                        </div>
+                                                        <!-- <div class="form-group col-md-12">
+                                                            <label>New Password <span class="required">*</span></label>
+                                                            <input required="" class="form-control square" name="npassword" type="password">
+                                                        </div>
+                                                        <div class="form-group col-md-12">
+                                                            <label>Confirm Password <span class="required">*</span></label>
+                                                            <input required="" class="form-control square" name="cpassword" type="password">
+                                                        </div> -->
+                                                        <div class="col-md-12">
+                                                            <button type="submit" class="btn btn-fill-out submit" name="submit" value="Submit">Save</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+<script>
+function hideIm(){
+    document.getElementById('userImg').style.display = 'none'
+}
+
+$(document).ready(function () {
+        $("#googleImg").error(function () {
+            $(this).hide();
+        });
+    });
+
+
+     function addAddress(){
+        const address = document.getElementById('address1').value
+        const city = document.getElementById('city').value
+        const state = document.getElementById('state').value
+        const pin = document.getElementById('pin').value
+        $.ajax({
+            url:'/add-address',
+            data:{
+                address:address,
+                city:city,
+                state:state,
+                pin:pin
+            },
+            method:'post',
+            success:(res)=>{
+                swal("Address is added")
+                location.reload()
+            },
+            error: function(xhr,status,error){
+                console.error('AJAX error',status, error)
+                swal("An error occured while adding address")
+            }
+        })
+
+    }
+
+    // Function to fetch paginated orders via AJAX
+    function fetchOrders(page = 1) {
+      fetch(`/filter-order?page=${page}`)
+        .then(response => response.json())
+        .then(data => {
+          const { orders, currentPage, totalPages } = data;
+            console.log(data)
+          // Update the table with orders
+          const ordersTableBody = document.querySelector('#ordersTable tbody');
+          ordersTableBody.innerHTML = ''; // Clear existing rows
+          let orderData = ''
+            for(i=0; i<orders.length; i++){
+                orderData += `<tr>
+                                    <td>${orders[i]._id}</td>
+                                    <td>${orders[i].totalAmount}</td>
+                                    ${orders[i].status === 'pending' ?
+                                    `<td>
+                                        <a href=#>
+                                            <span class="badge rounded-pill alert-warning">${orders[i].status}</span>
+                                        </a>
+                                    </td>` : `<span></span>`}
+                                    ${orders[i].status === 'cancelled' ? 
+                                    `<td>
+                                        <a href=#>
+                                        <span class="badge rounded-pill alert-danger ">${orders[i].status}</span>
+                                    </td>`
+                                    :  `<span></span>`}
+                                     ${orders[i].status === 'returned' ? 
+                                    `<td>
+                                        <a href=#>
+                                        <span class="badge rounded-pill alert-primary ">${orders[i].status}</span>
+                                    </td>`
+                                    :  `<span></span>`}
+                                    ${orders[i].status === 'placed' || orders[i].status === 'delivered'?
+                                    `<td>
+                                        <a href=#>
+                                        <span class="badge rounded-pill alert-success">${orders[i].status}</span>
+                                    </td>`:`<span></span>` }
+                                    <td>${new Date(orders[i].createdAt).toISOString().slice(0, 10)}</td>
+                                    ${orders[i].status === 'pending' ? 
+                                        `<td class="text-center">
+                                            <a href="/retry-payment/${orders[i]._id}" class="btn btn-md rounded font-sm">Continue Payment</a>
+                                        </td>`
+                                    :
+                                        `<td class="text-centerw">
+                                            <a href="/view-order?id=${orders[i]._id}" class="btn btn-md rounded font-sm">Detail</a>
+                                            
+                                        </td>`
+                                    }
+                                    
+                                </tr>`;
+            }
+            ordersTableBody.innerHTML += orderData;
+        // Update pagination controls
+        const pagination = document.getElementById('pagination');
+          pagination.innerHTML = ''; // Clear existing pagination
+
+          // Create "Previous" button
+          if (currentPage > 1) {
+            console.log(currentPage)
+            pagination.innerHTML += `<a href="#" onclick="fetchOrders(${currentPage - 1})">Previous</a>`;
+          }
+
+          // Create page number links
+          for (let i = 1; i <= totalPages; i++) {
+            pagination.innerHTML += `
+              <a href="#" onclick="fetchOrders(${i})" ${i === currentPage ? 'class="active"' : ''}>
+                ${i}
+              </a>
+            `;
+          }
+
+          // Create "Next" button
+          if (currentPage < totalPages) {
+
+            pagination.innerHTML += `<a href="#" onclick="fetchOrders(${currentPage + 1})">Next</a>`;
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching orders:', error);
+        });
+    }
+
+    // Fetch the first page of orders when the page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchOrders();
+    });
+</script>
+<%- include('../partials/user/footer') -%>

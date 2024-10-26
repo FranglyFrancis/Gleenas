@@ -1,0 +1,433 @@
+<%- include('../partials/user/header') -%>
+
+<main class="main">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/userhome" rel="nofollow">Home</a>
+                <span><a href="/shop" rel="nofollow">Shop</a></span> 
+                <span><a href="#" rel="nofollow">Checkout</a></span> 
+            </div>
+        </div>
+    </div>
+    <section class="mt-0 mb-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="divider mt-20 mb-50"></div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="order_review">
+                        <div class="mb-10">
+                            <h4>Billing Details</h4>
+                        </div>
+                            <form action="" id="savedAddress-form" method="post">
+                                <div class="payment_option">
+                                    <%
+                                    if(multiAddress != 0){
+                                    for(i=0;i<multiAddress.length;i++){
+                                    %>
+                                    <div class="custome-radio">
+                                        <input class="form-check-input" required="" type="radio" name="addressSelection" id="addressRadios<%= i+1 %>" value="<%= multiAddress[i].address %>, <%= multiAddress[i].city %>, <%= multiAddress[i].state %>, <%= multiAddress[i].pin %>" checked="">
+                                        <label class="form-check-label" for="addressRadios<%= i+1 %>" data-bs-toggle="collapse" data-target="#checkPayment" aria-controls="checkPayment"><%= multiAddress[i].address %>, <%= multiAddress[i].city %>, <%= multiAddress[i].state %>, <%= multiAddress[i].pin %></label>
+                                        <div class="form-group collapse in" id="checkPayment">
+                                            <p class="text-muted mt-5">Please send your cheque to Store Name, Store Street, Store Town, Store State / County, Store Postcode. </p>
+                                        </div>
+                                    </div>
+                                    <%
+                                    }
+                                    %>
+                                </div>
+                            </form>
+                        
+                            <div id="collapsePassword" class="form-group create-account collapse in">
+                                <input required="" type="password" placeholder="Password" name="password">
+                            </div> 
+                            
+                                <form action="" id="newAddress-form" method="post">
+                                    <div class="ship_detail">
+                                        <div class="form-group">
+                                            <div class="chek-form">
+                                                <div class="custome-checkbox">
+                                                    <input class="form-check-input" type="checkbox" name="checkbox" id="differentaddress">
+                                                    <label class="form-check-label label_info" data-bs-toggle="collapse" data-target="#collapseAddress" href="#collapseAddress" aria-controls="collapseAddress" for="differentaddress"><span>Ship to different address</span></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="collapseAddress" class="different_address collapse in">
+                                            <div class="form-group">
+                                                <input type="text" name="address" id="address" required="" placeholder="Address *">
+                                            </div>
+                                            <div class="form-group">
+                                                <input required="" type="text" name="city" id="city" placeholder="City / Town *">
+                                            </div>
+                                            <div class="form-group">
+                                                <input required="" type="text" name="state" id="state" placeholder="State / County *">
+                                            </div>
+                                            <div class="form-group">
+                                                <input required="" type="text" name="pincode" id="pin" placeholder="Postcode / ZIP *">
+                                            </div>
+                                            <button type="submit" onclick="addAddress()" class="btn btn-fill-out btn-block mt-30">Add address</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            
+                
+                            <%
+                            }
+                            else{
+                                %>
+                                    <form action="" id="newAddress-form1" method="post">
+                                            <div class="form-group">
+                                                <input type="text" name="address" id="address" required="" placeholder="Address *">
+                                            </div>
+                                            <div class="form-group">
+                                                <input required="" type="text" name="city" id="city" placeholder="City / Town *">
+                                            </div>
+                                            <div class="form-group">
+                                                <input required="" type="text" name="state" id="state" placeholder="State / County *">
+                                            </div>
+                                            <div class="form-group">
+                                                <input required="" type="text" name="pincode" id="pin" placeholder="Postcode / ZIP *">
+                                            </div>
+                                            <button type="submit" onclick="addAddress()" class="btn btn-fill-out btn-block mt-30">Add address</button>
+                                    </form>
+                            <%
+                            }
+                            %> 
+                    </div>
+                </div>           
+                <div class="col-md-6">
+                    <div class="order_review">
+                        <%
+                        if(cart.length != 0){
+                            %>
+                        <div class="mb-20">
+                            <h4>Your Orders</h4>
+                        </div>
+                        
+                        <div class="table-responsive order_table text-center">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Product</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                        <%
+                                   
+                                        for(i=0; i<cart.length; i++){
+                                    %>
+                                        <tr>
+                                            <td class="image product-thumbnail"><img src="productImages/<%= cart[i].product.image %>" alt="#"></td>
+                                            <td>
+                                                <h5><a href="shop-product-full.html"><%= cart[i].product.name %></a></h5> <span class="product-qty">x<%= cart[i].quantity %></span>
+                                            </td>
+                                            <%
+                                            if(isPending){
+                                            %>
+                                             <td><%= subtotal[i].subtotal %></td>
+
+                                            <%
+                                            }else{
+                                                %>
+                                                <td><%= subtotal[i].orders[0].subtotal %></td>
+                                            <%
+                                            }
+                                            %>
+                                        </tr>
+                                   <%
+                                    }
+                                    %>
+                                    <tr>
+                                        <th>SubTotal</th>
+                                        <td class="product-subtotal" colspan="2">र<%= total %></td>
+                                    </tr>
+                                
+                                    <tr>
+                                        <th>Shipping</th>
+                                        <td colspan="2"><em>Free Shipping</em></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Discount</th>
+                                        
+                                        <%if(discountPrice){
+                                            %>
+                                        
+                                            <td style="color: green;"  class="product-subtotal" id="disPrice" colspan="2">र<%= discountPrice %></td>
+                                            <%}else{
+                                                %>
+                                            <td class="product-subtotal" colspan="2"><i>Nil</i></td>
+                                            <% }
+                                            %>
+                                    </tr>
+                                    <tr>
+                                        
+                                        <th>Total</th>
+                                        <td colspan="2" class="product-subtotal" ><span id="totalPrice" class="font-xl text-brand fw-900">र<%= offerPrice %></span></td>
+                                  
+                                    </tr>      
+                                </tbody>
+                            </table>
+                        </div>
+                        <form action="" id="checkout-form" method="post">
+                            <div class="bt-1 border-color-1 mt-30 mb-30"></div>
+                                <div class="payment_method">
+                                    <div class="mb-25">
+                                        <h5>Payment</h5>
+                                    </div>
+                                    <div class="payment_option">
+                                        <div class="custome-radio">
+                                            <input class="form-check-input" required="" type="radio" name="payment_option" id="exampleRadios6" value="COD" checked="">
+                                            <label class="form-check-label" for="exampleRadios6" data-bs-toggle="collapse" data-target="#checkPayment" aria-controls="checkPayment">COD</label>
+                                            <div class="form-group collapse in" id="checkPayment">
+                                                <p class="text-muted mt-5">Please send your cheque to Store Name, Store Street, Store Town, Store State / County, Store Postcode. </p>
+                                            </div>
+                                        </div>
+                                        <div class="custome-radio">
+                                            <input class="form-check-input" required="" type="radio" name="payment_option" id="exampleRadios5" value="Online" checked="">
+                                            <label class="form-check-label" for="exampleRadios5" data-bs-toggle="collapse" data-target="#paypal" aria-controls="paypal">Online</label>
+                                            <div class="form-group collapse in" id="paypal">
+                                                <p class="text-muted mt-5">Pay via PayPal; you can pay with your credit card if you don't have a PayPal account.</p>
+                                            </div>
+                                        </div>
+                                        
+                                    <div>
+                                        <p style="color: red" id="codMessage"></p>
+                                    </div>
+                                   
+                                    </div>
+                                </div>
+                                <%
+                                if(orderId){
+                                    %>
+                                    <input type="hidden" name="orderId" value="<%= orderId %>">
+                                    <button class="btn btn-fill-out btn-block mt-30" type="submit" id="placeOrder">Place Order</button>
+
+                                    
+                                    <%
+                                }else{
+                                    %>
+                                    <button class="btn btn-fill-out btn-block mt-30" type="submit" id="placeOrder">Place Order</button>
+
+                                    <%
+                                }
+                                %>
+                               
+                        </form>
+                        <% }else{
+                            %>
+                            <div>  
+                                <%
+                                    if(typeof message !== 'undefined' ){
+                                %>
+                                    <p style="color: red"><%= message %></p>
+                                <%
+                                    }
+                                %>
+                            </div>
+                            <%
+                        }
+                        %>
+                        <br>
+                        <!-- <a href="/shop" class="btn btn-md rounded font-sm">Continue shopping</a> -->
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+           
+           
+            
+
+        </div>
+    </section>
+</main>
+<script>
+    function addAddress(){
+        const address = document.getElementById('address').value
+        const city = document.getElementById('city').value
+        const state = document.getElementById('state').value
+        const pin = document.getElementById('pin').value
+        $.ajax({
+            url:'/add-address',
+            data:{
+                address:address,
+                city:city,
+                state:state,
+                pin:pin
+                
+            },
+            method:'post',
+            success:(res)=>{
+                location.reload()
+            },
+            error: function(xhr,status,error){
+                console.error('AJAX error')
+                console.error('AJAX error',status, error)
+                alert("An error occured while adding address")
+            }
+        })
+
+    }
+
+   
+
+    document.addEventListener('DOMContentLoaded',()=>{
+        document.querySelectorAll('input[name="payment_option"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const selectedOption = this.value;
+            let total = document.getElementById('totalPrice').textContent
+            let errorMessage = document.getElementById('codMessage')
+            if(selectedOption === 'COD' && total > 1000){
+                errorMessage.innerText = `Sorry, COD is not allowed for orders above 1000`
+                document.getElementById('placeOrder').disabled = true
+            }
+            if(selectedOption === 'Online'){
+                errorMessage.innerText = ""
+                document.getElementById('placeOrder').disabled = false
+            }
+        })
+    })
+        const savedAddressForm = document.getElementById('savedAddress-form')
+        const orderForm = document.getElementById('checkout-form')
+        const serializeForm = (form) => {
+            const formData = new FormData(form);
+            const serializedData = {};
+            for (const [key, value] of formData.entries()) {
+                serializedData[key] = value;
+            }
+             return serializedData;
+         };
+
+     // Function to send data via AJAX using Fetch API
+     const sendData = async (url, data) => {
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Error:', error);
+            throw error;
+        }
+    };
+
+     // Function to handle both form submissions
+     const handleFormSubmit = async (event) => {
+        event.preventDefault();
+       
+        
+
+        // Serialize both forms
+        const savedAddressFormData = serializeForm(savedAddressForm);
+        const orderFormData = serializeForm(orderForm);
+        console.log('Serialized Order Form Data:', orderFormData);
+
+        // Combine both form data
+        const combinedData = {
+            savedAddress: savedAddressFormData,
+            order: orderFormData
+        };
+        try {
+            // Send combined data
+            
+            const response = await sendData('/proceed-to-checkout', combinedData);
+            console.log('Combined Form Response:', response);
+
+            // if(response.codMessage){
+            //     let errorMessage = document.getElementById('codMessage')
+            //     errorMessage.innerText = `${response.codMessage}`
+            //     //clear selection
+            //     selectedOption.checked = false
+            //     window.location.href = '/proceed-to-checkout';
+
+            // }
+
+           if(response.codSuccess){
+            // Navigate to a new URL after successful submission
+            window.location.href = '/order-success';
+           }else if(response.onlineSuccess){
+            // console.log("000000",response.data)
+            razorpayPayment(response.order)
+           }
+            
+        } catch (error) {
+            console.error('Submission failed:', error);
+        }
+    };
+
+    // Add submit event listeners to both forms
+    savedAddressForm.addEventListener('submit', handleFormSubmit);
+    orderForm.addEventListener('submit', handleFormSubmit);
+       
+})
+
+
+//--------Razorpay
+function razorpayPayment(order){
+    // console.log("order",order.totalAmount)
+
+        var options = {
+            "key": "rzp_test_JMjYDlPkgcOPqG", // Enter the Key ID generated from the Dashboard
+            "amount": (order.amount)*100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+            "currency": "INR",
+            "name": "Gleenas", //your business name
+            "description": "Test Transaction",
+            "image": "https://example.com/your_logo",
+            "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+            "handler": function (response){
+                // console.log("res",response)
+                verifyPayment(response,order)
+            },
+            "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information, especially their phone number
+                "name": "Gaurav Kumar", //your customer's name
+                "email": "gaurav.kumar@example.com", 
+                "contact": "9000090000"  //Provide the customer's phone number for better conversion rates 
+            },
+            "notes": {
+                "address": "Razorpay Corporate Office"
+            },
+            "theme": {
+                "color": "#F37254"
+            }
+        };
+    var rzp1 = new Razorpay(options);
+    rzp1.open();
+    } 
+    
+     function verifyPayment(payment,order){
+        // console.log("pppp",payment)
+        // console.log("orderrrrr",order)
+
+        $.ajax({
+            url:'/verify-payment',
+            data:{
+                payment,
+                order
+            },
+            method:'post',
+            success:(response)=>{
+                    if(response.paymentSuccess===true){
+                        console.log("success")
+                        location.href = '/order-success'
+                    }else if(response.paymentSuccess===false){
+                        console.log('Failed')
+                        location.href = '/order-failure'
+                    }
+                }
+        })
+     }
+</script>
+<%- include('../partials/user/footer') -%>

@@ -1,0 +1,173 @@
+<%- include('../partials/notUser/header') -%>
+<head>
+    <style>
+       
+        input, button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+        }
+        #timer {
+            font-weight: bold;
+            color: red;
+        }
+        #resendBtn {
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+        #resendBtn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+<section>
+    
+    <div class="container text-center">
+        <div class="d-inline-block login_wrap p-30 background-white border-radius-10 mb-md-5 mb-lg-0 mb-sm-5 ">
+                            
+            <div class="padding_eight_all bg-white">
+                <div class="text-center">
+                    <img src="user_assets/assets/imgs/theme/gleenas.png" alt="logo" class="" style="height: 50px; width: 100px;">
+                </div>
+                <div class="heading_s1 text-center">
+                    <h3>Login with OTP</h3>
+                </div>
+
+                <!-- Email input -->
+                <div class="form-group">
+                    <input type="email" id="email" placeholder="Enter your email" required class="form-control">
+                </div>
+                <button id="sendOtpBtn" class="btn btn-fill-out btn-block hover-up" onclick="sendOTP()">Send OTP</button>
+
+                <!-- OTP input (hidden initially) -->
+                <input type="text" id="otp" placeholder="Enter OTP" style="display: none;" class="form-control">
+                <div class="form-group text-center">
+                    <button id="verifyOtpBtn" class="btn btn-fill-out btn-block hover-up" onclick="verifyOTP()" style="display: none;">Login</button>
+                </div>
+
+                <!-- Resend OTP button -->
+                <button id="resendBtn" class="btn btn-fill-out btn-block hover-up" onclick="resendOTP()" disabled style="display: none;">Resend OTP</button>
+
+                <!-- Timer -->
+                <div id="timer" style="display: none;">OTP expires in: <span id="time"></span></div>
+                
+                <!-- Display messages -->
+                <div class="font-xs" id="message"></div>
+                <!-- <div class="alert alert-danger" id="errMessage"></div> -->
+            </div>
+
+            <div class="login_footer form-group text-center">
+                <label class="form-check-label font-xs" for="exampleCheckbox12"><span>By continuing, you agree to Gleena's Conditions of Use and Privacy Notice.</span></label>
+            </div>
+            <div class="divider-text-center mt-15 mb-15">
+                <span> or</span>
+            </div>
+            <ul class="btn-login list_none text-center mb-15">
+                <li><a href="/login" class="btn btn-facebook hover-up mb-lg-0 mb-sm-4">Login With password</a></li>
+                <li><a href="/google" class="btn btn-google hover-up">Login With Google</a></li>
+            </ul>
+            <div class="text-muted text-center font-xs">New user? <a href="/register">Sign up now</a></div>
+        </div>
+
+    </div>
+</section>
+
+    <script>
+        let countdown;
+        let otpSentTime;
+
+        // Send OTP function
+        async function sendOTP() {
+            const email = document.getElementById('email').value;
+            if (!email) {
+                alert('Please enter your email');
+                return;
+            }
+
+            const response = await fetch('/send-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email }),
+            });
+
+            const result = await response.json();
+            document.getElementById('message').innerText = result.message;
+
+            if (response.status === 200) {
+                document.getElementById('otp').style.display = 'block';
+                document.getElementById('verifyOtpBtn').style.display = 'block';
+                document.getElementById('resendBtn').style.display = 'block';
+                document.getElementById('sendOtpBtn').style.display = 'none';
+
+                otpSentTime = new Date(); // Record OTP sent time
+                startTimer(300); // Start the 5-minute countdown timer
+            }
+        }
+
+        // Resend OTP function
+        async function resendOTP() {
+            const email = document.getElementById('email').value;
+
+            if (!email) {
+                alert('Please enter your email to resend OTP');
+                return;
+            }
+
+            const response = await fetch('/resend-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email }),
+            });
+
+            const result = await response.json();
+            document.getElementById('message').innerText = result.message;
+
+            if (response.status === 200) {
+                otpSentTime = new Date(); // Record the time of the new OTP sent
+                clearInterval(countdown); // Clear the old countdown
+                startTimer(300); // Restart the countdown timer (5 minutes)
+            }
+        }
+
+        // Verify OTP function
+        async function verifyOTP() {
+            const email = document.getElementById('email').value;
+            const otp = document.getElementById('otp').value;
+
+            const response = await fetch('/verify-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, otp }),
+            });
+
+            const result = await response.json();
+            document.getElementById('message').innerText = result.message;
+            if(result.isLoggedIn){
+                 window.location.href = `/userhome`
+            }
+        }
+
+        // Timer function
+        function startTimer(duration) {
+            let timer = duration, minutes, seconds;
+            document.getElementById('timer').style.display = 'block';
+            countdown = setInterval(() => {
+                minutes = Math.floor(timer / 60);
+                seconds = timer % 60;
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+                document.getElementById('time').textContent = `${minutes}:${seconds}`;
+                if (--timer < 0) {
+                    clearInterval(countdown);
+                    document.getElementById('message').innerText = 'OTP has expired. Please request a new one.';
+                    document.getElementById('resendBtn').disabled = false; // Enable "Resend OTP" after expiration
+                    document.getElementById('verifyOtpBtn').disabled = true; // Disable OTP verification
+                }
+            }, 1000);
+        }
+    </script>
+<%- include('../partials/notUser/footer') -%>

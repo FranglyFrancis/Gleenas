@@ -1,0 +1,123 @@
+<%- include('../partials/header') -%>
+
+<section class="content-main">
+    <div class="content-header">
+        <a href="javascript:history.back()"><i class="material-icons md-arrow_back"></i> Go back </a>
+    </div>
+    <div class="card mb-4">
+        <div class="card-header bg-primary" style="height:150px">
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-xl col-lg flex-grow-0" style="flex-basis:230px">
+                    <div class="img-thumbnail shadow w-100 bg-white position-relative text-center" style="height:190px; width:200px; margin-top:-120px">
+                        <img src="productImages/<%= product.image[0] %>" class="center-xy img-fluid" alt="Logo Brand">
+                    </div>
+                </div> <!--  col.// -->
+                <div class="col-xl col-lg">
+                    <h3><%= product.name %></h3>
+                    <p><%= product.description %></p>
+                </div> <!--  col.// -->
+                <div class="col-xl-4 text-md-end">
+                    
+                    <% if(product.block === false){
+                        %>
+                    <a href="/admin/block-product?id=<%= product._id %>">
+                        <span class="btn btn-success">Active</span>
+                    </a>
+                    <% }
+                         else{
+                    %>
+                    <a href="/admin/unblock-product?id=<%= product._id %>">
+                        <span class="btn btn-danger">Blocked</span>
+                    </a>
+                    <%
+                }
+                %>
+                <a href="/admin/edit-product?id=<%= product._id %>">
+                    <span class="btn btn-success">Edit</span>
+                </a>
+                </div>
+            </div> <!-- card-body.// -->
+            <hr class="my-4">
+            <div class="row g-4">
+                <div class="col-md-12 col-lg-4 col-xl-2">
+                    <article class="box">
+                        <p class="mb-0 text-muted">Actual price</p>
+                        <h5 class="text-success"><%= product.price %></h5>
+                        <p class="mb-0 text-muted">Selling price</p>
+                        <h5 class="text-success mb-0"><%= product.discount %></h5>
+                    </article>
+                </div> <!--  col.// -->
+                <div class="col-sm-6 col-lg-4 col-xl-3">
+                    <h6>Category</h6>
+                    <p>
+                        <%= product.category %>
+                    </p>
+                    <h6>Product variant</h6>
+                    <p>
+                        <%= product.quantity %> <%= product.unit %> 
+                    </p>
+                </div>
+                <div class="col-sm-6 col-lg-4 col-xl-3">
+                    <h6>Stock</h6>
+                    <p>
+                        <%= product.countInStock %>
+                    </p>
+                    <h6>Maximum buying limit</h6>
+                    <p>
+                        <%= product.maxLimit %>
+                    </p>
+                </div>
+                <div class="col-sm-6 col-lg-4 col-xl-3">
+                    <h6>Is Featured: </h6>
+                        <%if(product.isFeatured === true){
+                            %>
+                            <p>Yes</p>
+                            <% 
+                            }
+                            else{
+                            %>
+                            <p>No</p>
+                                <%
+                            }
+                        %>
+                </div>
+                <!-- <div class="col-sm-6 col-xl-4 text-xl-end">
+                    <map class="mapbox position-relative d-inline-block">
+                        <img src="assets/imgs/misc/map.jpg" class="rounded2" height="120" alt="map">
+                        <span class="map-pin" style="top:50px; left: 100px"></span>
+                        <button class="btn btn-sm btn-brand position-absolute bottom-0 end-0 mb-15 mr-15 font-xs"> Large </button>
+                    </map>
+                </div>  col.// -->
+            </div> <!--  row.// -->
+        </div> <!--  card-body.// -->
+    </div> <!--  card.// -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">All images</h5>
+            <div class="row">
+                <%
+                if(product.image.length > 0){
+                    for(i=0; i<product.image.length; i++){
+                %>
+                
+                <div class="col-xl-2 col-lg-3 col-md-6">
+                    <div class="card card-product-grid">
+                        <a href="#" class="img-wrap"> <img src="productImages/<%= product.image[i] %>" alt="Product"> </a>
+                        <!-- <div class="info-wrap">
+                            <a href="#" class="title">Product name</a>
+                            <div class="price mt-1">$179.00</div> price-wrap.// -->
+                        </div> 
+                    </div> <!-- card-product  end// -->
+                </div> <!-- col.// -->
+                <%
+                    }
+                }
+                %>
+            </div> <!-- row.// -->
+        </div> <!--  card-body.// -->
+    </div> <!--  card.// -->
+</section> <!-- content-main end// -->
+<%- include('../partials/footer') -%>
+

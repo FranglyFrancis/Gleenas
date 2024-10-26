@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login with OTP</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        input, button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+        }
+        #timer {
+            font-weight: bold;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Login with OTP</h2>
+        <input type="email" id="email" placeholder="Enter your email" required>
+        <button onclick="sendOTP()">Send OTP</button>
+
+        <input type="text" id="otp" placeholder="Enter OTP" style="display: none;">
+        <button onclick="verifyOTP()" style="display: none;">Verify OTP</button>
+
+        <button id="resendBtn" onclick="resendOTP()" style="display: none;">Resend OTP</button>
+
+        <div id="timer" style="display: none;">OTP expires in: <span id="time"></span></div>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        let countdown;
+        let otpSentTime;
+
+        // Send OTP function
+        async function sendOTP() {
+            const email = document.getElementById('email').value;
+
+            if (!email) {
+                alert('Please enter your email');
+                return;
+            }
+
+            const response = await fetch('/send-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email }),
+            });
+
+            const result = await response.json();
+            document.getElementById('message').innerText = result.message;
+
+            if (response.status === 200) {
+                document.getElementById('otp').style.display = 'block';
+                document.querySelector('button[onclick="verifyOTP()"]').style.display = 'block';
+                document.getElementById('resendBtn').style.display = 'block';
+
+                // Start OTP timer
+                otpSentTime = new Date();
+                startTimer(300); // 5 minutes
+            }
+        }
+
+        // Resend OTP function
+        async function resendOTP() {
+            const email = document.getElementById('email').value;
+
+            if (!email) {
+                alert('Please enter your email to resend OTP');
+                return;
+            }
+
+            const response = await fetch('/resend-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email }),
+            });
+
+            const result = await response.json();
+            document.getElementById('message').innerText = result.message;
+
+            if (response.status === 200) {
+                // Restart OTP timer
+                otpSentTime = new Date();
+                clearInterval(countdown); // Clear old timer
+                startTimer(300); // 5 minutes for the new OTP
+            }
+        }
+
+        // Verify OTP function
+        async function verifyOTP() {
+            const email = document.getElementById('email').value;
+            const otp = document.getElementById('otp').value;
+
+            const response = await fetch('/verify-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, otp }),
+            });
+
+            const result = await response.json();
+            document.getElementById('message').innerText = result.message;
+        }
+
+        // Timer function
+        function startTimer(duration) {
+            let timer = duration, minutes, seconds;
+            document.getElementById('timer').style.display = 'block';
+            countdown = setInterval(() => {
+                minutes = Math.floor(timer / 60);
+                seconds = timer % 60;
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+                document.getElementById('time').textContent = `${minutes}:${seconds}`;
+                if (--timer < 0) {
+                    clearInterval(countdown);
+                    document.getElementById('message').innerText = 'OTP has expired. Please request a new one.';
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

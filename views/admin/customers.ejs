@@ -1,0 +1,147 @@
+<%- include('../partials/header') -%>
+<section class="content-main">
+    <div class="content-header">
+        <h2 class="content-title">Customers list</h2>
+    </div>
+    <div class="card mb-4">
+       <!-- <header class="card-header">
+            <div class="row gx-3">
+                <div class="col-lg-4 col-md-6 me-auto">
+                    <input type="text" placeholder="Search..." class="form-control">
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select class="form-select">
+                        <option>Status</option>
+                        <option>Active</option>
+                        <option>Disabled</option>
+                        <option>Show all</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select class="form-select">
+                        <option>Show 20</option>
+                        <option>Show 30</option>
+                        <option>Show 40</option>
+                    </select>
+                </div>
+            </div>
+        </header> card-header end// -->
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="customerTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Status</th>
+                                    <!-- <th>Last ordered Date</th> -->
+                                    <th class="text-end"> Action </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Customers via AJAX -->
+                            </tbody>
+                        </table> <!-- table-responsive.// -->
+                    </div>
+                </div>
+            </div>
+            <div id="pagination"></div>
+        </div> <!-- card-body end// -->
+    </div> <!-- card end// -->
+    <!-- <div class="pagination-area mt-15 mb-50">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start">
+                <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                <li class="page-item"><a class="page-link" href="#">02</a></li>
+                <li class="page-item"><a class="page-link" href="#">03</a></li>
+                <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                <li class="page-item"><a class="page-link" href="#">16</a></li>
+                <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
+            </ul>
+        </nav>
+    </div> -->
+</section> <!-- content-main end// -->
+<%- include('../partials/footer') -%>
+<script>
+    // Function to fetch paginated orders via AJAX
+    function fetchCustomers(page = 1) {
+      fetch(`/admin/paginate-customers?page=${page}`)
+        .then(response => response.json())
+        .then(data => {
+          const { customers, currentPage, totalPages } = data;
+            console.log(data)
+          // Update the table with orders
+          const customerTableBody = document.querySelector('#customerTable tbody');
+          customerTableBody.innerHTML = ''; // Clear existing rows
+          let customersData = ''
+            if(customers.length > 0){
+            for( let i=0;i<customers.length;i++ ){
+                customersData +=
+                                `<tr>
+                                    <td class="text-center">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" />
+                                        </div>
+                                    </td>
+                                
+                                    <td>
+                                       ${customers[i].name} 
+                                    </td>
+                                    <td>
+                                       ${customers[i].email}
+                                    </td>
+                                    
+                                    
+                                    <td class="text-end">
+                                    ${customers[i].block === false ? 
+                                                `<a href="/admin/block-customer?id=${customers[i]._id}">
+                                                    <span class="badge rounded-pill alert-success">Active</span>
+                                                </a>`
+                                           :
+                                                `<a href="/admin/unblock-customer?id=${customers[i]._id}">
+                                                    <span class="badge rounded-pill alert-danger">Blocked</span>
+                                                </a>`
+                                            }
+                                    </td>
+                                    
+                                </tr>`
+                                
+            }
+        }
+            customerTableBody.innerHTML += customersData;
+        // Update pagination controls
+        const pagination = document.getElementById('pagination');
+          pagination.innerHTML = ''; // Clear existing pagination
+
+          // Create "Previous" button
+          if (currentPage > 1) {
+            console.log(currentPage)
+            pagination.innerHTML += `<a href="#" onclick="fetchCustomers(${currentPage - 1})">Previous </a>`;
+          }
+
+          // Create page number links
+          for (let i = 1; i <= totalPages; i++) {
+            pagination.innerHTML += `
+              <a href="#" onclick="fetchCustomers(${i})" ${i === currentPage ? 'class="active"' : ''}>
+                ${i + ""}
+              </a>
+            `;
+          }
+
+          // Create "Next" button
+          if (currentPage < totalPages) {
+            pagination.innerHTML += `<a href="#" onclick="fetchCustomers(${currentPage + 1})"> Next</a>`;
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching customers:', error);
+        });
+    }
+
+    // Fetch the first page of customers when the page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchCustomers();
+    });
+</script>

@@ -1,0 +1,103 @@
+<%- include('../partials/header')-%>
+<section class="content-main">
+    <div class="row">
+        <div class="col-6">
+            <div class="content-header">
+                <h2 class="content-title">Add New Coupon</h2>
+                <form action="" method="post">
+                <div>
+                    <button class="btn btn-md rounded font-sm hover-up" type="submit">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h6>1. General info</h6>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="mb-4">
+                                <label class="form-label">Description</label>
+                                <textarea placeholder="Type here" name="description" class="form-control" rows="2"></textarea>
+                            </div>
+                            <!-- <div class="mb-4">
+                                <label class="form-label">Expiry Date</label>
+                                <input type="date" placeholder="DD/MM/YYYY" name="date" class="form-control" required min="">
+                            </div> -->
+                        </div> <!-- col.// -->
+                    </div> <!-- row.// -->
+                    <hr class="mb-4 mt-0">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h6>2. Pricing</h6>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="mb-4">
+                                <label class="form-label">Discount Percentage</label>
+                                <input type="number" name="disPrice" placeholder="Enter below 60%" min="0" max="60" class="form-control">
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label">Minimum order value</label>
+                                <input type="number" name="minOrder" min="1" max="10000" placeholder="Type here" class="form-control">
+                            </div>
+                        </div> <!-- col.// -->
+                    </div> <!-- row.// -->
+                    <!-- <hr class="mb-4 mt-0">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h6>3. Category</h6>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="mb-4">
+                                <label class="mb-2 form-check form-check-inline" style="width: 45%;">
+                                    <input class="form-check-input" checked="" name="mycategory" type="radio">
+                                    <span class="form-check-label"> Clothes </span>
+                                </label>
+                                <label class="mb-2 form-check form-check-inline" style="width: 45%;">
+                                    <input class="form-check-input" name="mycategory" type="radio">
+                                    <span class="form-check-label"> Electronics </span>
+                                </label>
+                                <label class="mb-2 form-check form-check-inline" style="width: 45%;">
+                                    <input class="form-check-input" name="mycategory" type="radio">
+                                    <span class="form-check-label"> Sports </span>
+                                </label>
+                                <label class="mb-2 form-check form-check-inline" style="width: 45%;">
+                                    <input class="form-check-input" name="mycategory" type="radio">
+                                    <span class="form-check-label"> Automobiles </span>
+                                </label>
+                                <label class="mb-2 form-check form-check-inline" style="width: 45%;">
+                                    <input class="form-check-input" name="mycategory" type="radio">
+                                    <span class="form-check-label"> Home interior </span>
+                                </label>
+                                <label class="mb-2 form-check form-check-inline" style="width: 45%;">
+                                    <input class="form-check-input" name="mycategory" type="radio">
+                                    <span class="form-check-label"> Smartphones </span>
+                                </label>
+                                <label class="mb-2 form-check form-check-inline" style="width: 45%;">
+                                    <input class="form-check-input" name="mycategory" type="radio">
+                                    <span class="form-check-label"> Books </span>
+                                </label>
+                                <label class="mb-2 form-check form-check-inline" style="width: 45%;">
+                                    <input class="form-check-input" name="mycategory" type="radio">
+                                    <span class="form-check-label"> Kids item </span>
+                                </label>
+                                <label class="mb-2 form-check form-check-inline" style="width: 45%;">
+                                    <input class="form-check-input" name="mycategory" type="radio">
+                                    <span class="form-check-label"> Others </span>
+                                </label>
+                            </div>
+                        </div> col.// 
+                    </div> row.// -->
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</section> <!-- content-main end// -->
+<%- include('../partials/footer')-%>

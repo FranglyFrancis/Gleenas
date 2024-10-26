@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Sales Report</title>
+    <link rel="stylesheet" href="/path/to/your/css/style.css"> <!-- Add your CSS file -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery -->
+</head>
+<body>
+    <div class="container">
+        <h1>Sales Report Dashboard</h1>
+
+        <!-- Filter Form -->
+        <form id="filterForm">
+            <div>
+                <label for="filterType">Filter By:</label>
+                <select name="filterType" id="filterType">
+                    <option value="daily">Daily</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="yearly">Yearly</option>
+                    <option value="custom">Custom Date Range</option>
+                </select>
+            </div>
+
+            <div id="customDateRange" style="display: none;">
+                <label for="startDate">Start Date:</label>
+                <input type="date" name="startDate" id="startDate">
+                <label for="endDate">End Date:</label>
+                <input type="date" name="endDate" id="endDate">
+            </div>
+
+            <button type="submit">Apply Filter</button>
+        </form>
+
+        <!-- Chart Container -->
+        <div class="chart-container">
+            <canvas id="salesChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // Initialize empty chart
+        let salesChart;
+        
+        function renderChart(labels, data) {
+            if (salesChart) {
+                salesChart.destroy(); // Destroy old chart if it exists
+            }
+
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            salesChart = new Chart(ctx, {
+                type: 'line', // You can change the chart type to 'bar', 'pie', etc.
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Sales Amount',
+                        data: data,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Handle filter form submission
+        $('#filterForm').submit(function (e) {
+            e.preventDefault();
+            
+            const filterType = $('#filterType').val();
+            const startDate = $('#startDate').val();
+            const endDate = $('#endDate').val();
+
+            // AJAX request to get sales data
+            $.ajax({
+                url: '/admin/dashboard/sales-report',
+                method: 'GET',
+                data: { filterType, startDate, endDate },
+                success: function (response) {
+                    const labels = response.labels;
+                    const salesData = response.salesData;
+
+                    // Render chart with the data
+                    renderChart(labels, salesData);
+                },
+                error: function (err) {
+                    console.log('Error fetching sales data:', err);
+                }
+            });
+        });
+
+        // Show/Hide custom date range input
+        $('#filterType').change(function () {
+            if ($(this).val() === 'custom') {
+                $('#customDateRange').show();
+            } else {
+                $('#customDateRange').hide();
+            }
+        });
+    </script>
+</body>
+</html>

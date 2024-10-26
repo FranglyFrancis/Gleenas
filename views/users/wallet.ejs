@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet Page</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Welcome, [User Name]</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/profile">Profile</a>
+            <a href="/logout">Logout</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="wallet-balance">
+            <h2>Wallet Balance</h2>
+            <p>$<span id="walletBalance">1,250.00</span></p>
+        </section>
+
+        <section class="wallet-actions">
+            <button id="addFunds">Add Funds</button>
+            <button id="withdrawFunds">Withdraw Funds</button>
+            <button id="transferFunds">Transfer Funds</button>
+        </section>
+
+        <section class="transaction-history">
+            <h2>Transaction History</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2024-09-08</td>
+                        <td>Purchase at Store</td>
+                        <td>Debit</td>
+                        <td>-$100.00</td>
+                    </tr>
+                    <tr>
+                        <td>2024-09-07</td>
+                        <td>Funds Added</td>
+                        <td>Credit</td>
+                        <td>$500.00</td>
+                    </tr>
+                    <!-- Additional rows -->
+                </tbody>
+            </table>
+        </section>
+
+        <section class="wallet-promotions">
+            <h2>Promotions</h2>
+            <p>Get a 10% bonus when you add funds of $100 or more!</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Your Company. <a href="/terms">Terms of Service</a> | <a href="/privacy">Privacy Policy</a> | <a href="/contact">Contact Us</a></p>
+    </footer>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
