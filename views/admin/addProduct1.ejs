@@ -1,20 +1,81 @@
 <%- include('../partials/header.ejs') %>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
-
 <style>
-    * { padding: 0; margin: 0; box-sizing: border-box; }
-    body { background-color: #f5f8ff; }
-    .container { background-color: #ffffff; width: 60%; min-width: 450px; position: relative; margin: 50px auto; padding: 50px 20px; border-radius: 7px; box-shadow: 0 20px 35px rgba(0,0,0,0.05); }
-    input[type="file"] { display: none; }
-    #label { display: block; position:relative; background-color: #02453f; color: #ffffff; font-size:12px; text-align: center; width:200px; padding: 18px 0; margin: auto; border-radius: 5px; cursor: pointer; }
-    #images { width:45%; position: relative; margin: auto; display:flex; justify-content: space-evenly; gap: 20px; flex-wrap: wrap; }
-    figure { width: 45%; }
-    img { width: 100%; }
-    figcaption { text-align: center; font-size: 2.4vmin; margin-top: 0.5vmin; }
-    
-    /* Cropping modal styles */
+    *{
+        padding: 0;
+        margin:0;
+        box-sizing: border-box;
+    }
+
+    body{
+        background-color: #f5f8ff;
+    }
+
+    .container{
+        background-color: #ffffff;
+        width: 60%;
+        min-width: 450px;
+        position: relative;
+        margin: 50px auto;
+        padding: 50px 20px;
+        border-radius: 7px;
+        box-shadow: 0 20px 35px rgba(0,0,0,0.05);
+    }
+    input[type="file"]{
+        display: none;
+    }
+    #label{
+        display: block;
+        position:relative;
+        background-color: #02453f;
+        color: #ffffff;
+        font-size:12px;
+        text-align: center;
+        width:200px;
+        padding: 18px 0;
+        margin: auto;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .container p{
+        text-align: center;
+        margin: 20px 0 30px 0;
+        color:black;
+    }
+    #images{
+        width:90%;
+        position: relative;
+        margin: auto;
+        display:flex;
+        justify-content: space-evenly;
+        gap: 20px;
+        flex-wrap: wrap;
+
+    }
+
+    figure{
+        width: 45%;
+    }
+    img{
+        width: 100%;
+    }
+    figcaption{
+        text-align: center;
+        font-size: 2.4vmin;
+        margin-top: 0.5vmin;
+    }
+
+       /* Cropping modal styles */
+       .crop-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+    }
+
     #cropping-modal {
-        display: none; 
+        display: none; /* Hidden by default */
         position: fixed;
         top: 0;
         left: 0;
@@ -23,11 +84,12 @@
         background: rgba(0, 0, 0, 0.5);
         align-items: center;
         justify-content: center;
-        z-index: 1000;
     }
+
     #cropping-image {
         max-width: 100%;
     }
+
     #cropping-buttons {
         margin-top: 10px;
         display: flex;
@@ -124,18 +186,36 @@
           
             </div> <!-- card end// -->
         </div>
+         <!-- Cropping Modal -->
+    <div id="cropping-modal" class="crop-container">
+        <div class="crop-container">
+            <img id="cropping-image" src="" alt="Cropping area">
+            <div id="cropping-buttons">
+                <button id="crop-btn" class="btn btn-primary">Crop</button>
+                <button id="cancel-crop-btn" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
         <div class="col-lg-3">
             <div class="card mb-4">
-                <div class="card-header"><h4>Media</h4></div>
+                <div class="card-header">
+                    <h4>Media</h4>
+                </div>
                 <div class="card-body">
                     <div class="input-upload">
                         <img src="assets/imgs/theme/upload.svg" alt="">
-                        <input type="file" id="file-input" accept="image/png, image/jpeg" name="image" multiple onchange="handleFiles()" required>
-                        <label id="label" for="file-input"><i class="fas fa-upload"></i>&nbsp;Choose photos</label>
-                        <p id="num-of-files">No files chosen*</p>
+                            <input type="file" id="file-input" accept="image/png, image/jpeg" name="image" onchange="preview()" multiple required>
+                            <label id="label" for="file-input">
+                                <i class ="fas fa-upload"></i>
+                                &nbsp; choose a photo
+                            </label>
+                            <p id="num-of-files">No of files chosen*</p>
+                        <!-- <input class="d-none" name="image" multiple="" type="file" id="image" onchange="image_select()">
+                        <button class="btn btn-sm btn-primary" type="button" 
+                        onclick="document.getElementById('image').click()">Choose images</button> -->
                     </div>
                 </div>
-            </div>
+            </div> <!-- card end// -->
             <div class="card mb-4">
                 <div class="card-header">
                     <h4>Organization</h4>
@@ -160,52 +240,29 @@
                 </div>
             </div> <!-- card end// -->
         </div>
-
-        <div id="images" class="card mb-4"></div> <!-- Image preview container -->
-
-        <!-- Cropping Modal -->
-        <div id="cropping-modal">
-            <div>
-                <img id="cropping-image" src="" alt="Cropping area">
-                <div id="cropping-buttons">
-                    <button id="crop-btn" class="btn btn-primary">Crop</button>
-                    <button id="cancel-crop-btn" class="btn btn-secondary">Cancel</button>
-                </div>
+        <div class="col-lg-3">
+            <div class="card mb-4">
+                <div id="images"></div>
             </div>
         </div>
-            
-            
-        </div>
-        
-            
-        
         </form>
     </div>
 </section> <!-- content-main end// -->
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 <script>
-    let fileInput = document.getElementById("file-input");
+ let fileInput = document.getElementById("file-input");
     let imageContainer = document.getElementById("images");
+    let numOfFiles = document.getElementById("num-of-files");
     let croppingModal = document.getElementById("cropping-modal");
     let croppingImage = document.getElementById("cropping-image");
     let cropper;
-    let files = []; // Store files for processing
-    let currentFileIndex = 0;
 
-    // Handle multiple files selection
-    function handleFiles() {
-        files = Array.from(fileInput.files); // Convert FileList to array
-        currentFileIndex = 0; // Reset index for new selection
-        document.getElementById("num-of-files").textContent = `${files.length} files selected`;
-        
-        if (files.length > 0) {
-            openCropper(files[currentFileIndex]);
-        }
-    }
+    // Function to open the Cropper modal
+    function openCropper() {
+        let file = fileInput.files[0];
+        if (!file) return;
 
-    // Open cropper modal for each image
-    function openCropper(file) {
         let reader = new FileReader();
         reader.onload = function(event) {
             croppingImage.src = event.target.result;
@@ -213,55 +270,34 @@
 
             // Initialize Cropper.js
             cropper = new Cropper(croppingImage, {
-                aspectRatio: 1,
-                viewMode: 1,
-                ready() {
-                    // Ensure cropping area is correctly initialized
-                }
+                aspectRatio: 1, // Adjust as needed (e.g., 1 for square, 16/9 for rectangular)
+                viewMode: 1
             });
         };
         reader.readAsDataURL(file);
     }
 
-    // Crop and add to preview
+    // Crop Button
     document.getElementById("crop-btn").addEventListener("click", function() {
         let croppedCanvas = cropper.getCroppedCanvas();
         let croppedImage = document.createElement("img");
         croppedImage.src = croppedCanvas.toDataURL("image/png");
 
-        let figure = document.createElement("figure");
-        let figCaption = document.createElement("figcaption");
-        figCaption.innerText = files[currentFileIndex].name;
-        figure.appendChild(croppedImage);
-        figure.appendChild(figCaption);
-        
-        imageContainer.appendChild(figure);
+        // Add cropped image to the preview area
+        imageContainer.innerHTML = ""; // Clear previous images
+        imageContainer.appendChild(croppedImage);
 
-        // Close modal and move to the next image
-        closeCropper();
-    });
-
-    // Cancel cropping
-    document.getElementById("cancel-crop-btn").addEventListener("click", function() {
-        closeCropper();
-    });
-
-    function closeCropper() {
+        // Close the cropping modal
         croppingModal.style.display = "none";
-        if (cropper) {
-            cropper.destroy();
-        }
+        cropper.destroy();
+    });
 
-        // Increment index for the next file
-        currentFileIndex++;
-        if (currentFileIndex < files.length) {
-            openCropper(files[currentFileIndex]);
-        } else {
-            currentFileIndex = 0; // Reset for next upload
-        }
-    }
+    // Cancel Crop Button
+    document.getElementById("cancel-crop-btn").addEventListener("click", function() {
+        croppingModal.style.display = "none";
+        cropper.destroy();
+    });
 </script>
-
 
         <!-- multiple image upload -->
         <!-- <script type="text/javascript">

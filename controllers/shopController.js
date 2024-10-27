@@ -184,7 +184,7 @@ console.log("queryy",req.query.page)
                 totalProducts = await Product.find({block:false}).populate({path:'category', match : {block:false}}).exec()
                 totalProducts = totalProducts.filter(product => product.category)
         }
-
+console.log(products)
 
         res.json({
             products,
