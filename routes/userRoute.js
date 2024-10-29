@@ -120,7 +120,9 @@ userRoute.get('/search',isLogin,isBlocked,shopController.searchProductLoad)
 
 //User profile
 userRoute.get('/profile',isLogin,isBlocked,profileController.profileLoad)
-userRoute.post('/profile',upload.single('image'),profileController.profileImageEdit)
+// userRoute.post('/profile',upload.single('image'),profileController.profileImageEdit)
+userRoute.post('/profile',isLogin,isBlocked,profileController.updateProfile)
+
 
 //user address
 userRoute.post('/add-address',addressController.addAddress)

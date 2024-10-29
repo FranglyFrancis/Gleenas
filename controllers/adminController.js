@@ -66,7 +66,7 @@ const verifyLogin = async(req,res)=>{
 
 const dashboardLoad = async(req,res)=>{
     const { startDate, endDate, period } = req.query;
-
+    console.log(req.query)
     let query = {};
 
     // Date filters based on the period or custom date range
@@ -197,7 +197,54 @@ const getBestSellingProducts = async()=>{
         
     }
   }
-  
+
+const filterChart = async(req,res)=>{
+    const {  period, startDate, endDate } = req.query;
+    let filter = {};
+
+    try{
+        // Calculate the date range based on `period` if specified
+        if (period) {
+            const today = new Date();
+            switch (period) {
+                case 'day':
+                    filter.createdAt = {
+                        $gte: new Date(today.setDate(today.getDate() - 1)),
+                    };
+                    break;
+                case 'week':
+                    filter.createdAt = {
+                        $gte: new Date(today.setDate(today.getDate() - 7)),
+                    };
+                    break;
+                case 'month':
+                    filter.createdAt = {
+                        $gte: new Date(today.setMonth(today.getMonth() - 1)),
+                    };
+                    break;
+            }
+        } else if (startDate && endDate) {
+            // Custom date range
+            filter.createdAt = {
+                $gte: new Date(startDate),
+                $lte: new Date(endDate),
+            };
+        }
+         // Fetch reports with pagination
+         const reports = await Order.find(filter)
+         // Count total documents for pagination
+         const totalReports = await Order.countDocuments(filter);
+         const totalOrderAmount = (reports.reduce((sum, order) => sum + order.totalAmount, 0)).toFixed(2);
+         const totalDiscount = (reports.reduce((sum, order) => sum + (order.discount || 0), 0)).toFixed(2);
+         res.json({
+            totalReports,
+            totalOrderAmount,
+            totalDiscount
+        });
+    } catch (error) {
+        console.log(error.message)
+    }
+}
   
 
 const logout = async(req,res,next)=>{
@@ -343,7 +390,8 @@ module.exports = {
     blockUser,
     unblockUser,
     customerDetail,
-    paginateCustomers
+    paginateCustomers,
+    filterChart
 }
 
 

@@ -68,7 +68,7 @@
                                                 <input required="" type="text" name="state" id="state" placeholder="State / County *">
                                             </div>
                                             <div class="form-group">
-                                                <input required="" type="text" name="pincode" id="pin" placeholder="Postcode / ZIP *">
+                                                <input required="" type="number" name="pincode" id="pin" placeholder="Postcode *">
                                             </div>
                                             <button type="submit" onclick="addAddress()" class="btn btn-fill-out btn-block mt-30">Add address</button>
                                         </div>
@@ -91,7 +91,7 @@
                                                 <input required="" type="text" name="state" id="state" placeholder="State / County *">
                                             </div>
                                             <div class="form-group">
-                                                <input required="" type="text" name="pincode" id="pin" placeholder="Postcode / ZIP *">
+                                                <input required="" type="number" name="pincode" id="pin" placeholder="Postcode *">
                                             </div>
                                             <button type="submit" onclick="addAddress()" class="btn btn-fill-out btn-block mt-30">Add address</button>
                                     </form>
@@ -380,12 +380,12 @@ function razorpayPayment(order){
     // console.log("order",order.totalAmount)
 
         var options = {
-            "key": "rzp_test_JMjYDlPkgcOPqG", // Enter the Key ID generated from the Dashboard
+            "key": 'rzp_test_JMjYDlPkgcOPqG', // Enter the Key ID generated from the Dashboard
             "amount": (order.amount)*100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
             "currency": "INR",
             "name": "Gleenas", //your business name
             "description": "Test Transaction",
-            "image": "https://example.com/your_logo",
+            "image": "user_assets/assets/imgs/theme/gleenas.png",
             "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
             "handler": function (response){
                 // console.log("res",response)
@@ -408,8 +408,8 @@ function razorpayPayment(order){
     } 
     
      function verifyPayment(payment,order){
-        // console.log("pppp",payment)
-        // console.log("orderrrrr",order)
+        console.log("pppp",payment)
+        console.log("orderrrrr",order)
 
         $.ajax({
             url:'/verify-payment',

@@ -51,7 +51,7 @@
                                         <h5 class="product-name"><a href="shop-product-right.html"><%= cart[i].product.name %> <%= cart[i].product.quantity %> <%= cart[i].product.unit %></a></h5>
                                         <p class="font-xs"></p>
                                     </td>
-                                    <td class="price" data-title="Price" id="<%= cart[i].product.price %>"><span><%= (subtotal[i].orders[0].subtotal).toFixed(2) %></span></td>
+                                    <td class="price" data-title="Price" ><span><%= (subtotal[i].orders[0].subtotal).toFixed(2) %></span></td>
                                     <td class="text-center" data-title="Stock"> 
                                         <button class="btn btn-sm" onclick="changeQuantity('<%= user._id %>','<%= cart[i]._id %>','<%= cart[i].product._id %>','<%= cart[i].product.countInStock %>','<%= cart[i].product.maxLimit %>','<%= cart[i].product.price %>',-1)">-</button>
                                         <span id="<%= cart[i].product._id %>"><%= cart[i].quantity %></span>
@@ -108,7 +108,7 @@
                                             <tbody>
                                                 <tr>
                                                     <td class="cart_total_label">Cart Subtotal</td>
-                                                    <td class="cart_total_amount" id="subtotal"><span  class="font-lg fw-900 text-brand">र<%= total %></span></td>
+                                                    <td class="cart_total_amount" >र<span  class="font-lg fw-900 text-brand" id="subtotal"><%= total %></span></td>
                                                 </tr>
                                                 <tr>
                                                     <td class="cart_total_label">Shipping</td>
@@ -119,29 +119,14 @@
                                                     
                                                     <td class="cart_total_label">Discount</td>
                                                 
-                                                    <%
-                                                    if(cart){
-                                                        let discountTotal = 0
-                                                        for(i=0; i<cart.length; i++){
-                                                        
-                                                            discountTotal = discountTotal + ((subtotal[i].orders[0].subtotal) * cart[i].product.discountApplied * 0.01)
-                                                            
-                                                        }
-                                                        console.log("total",discountTotal)
-
-                                                    %>
-                                                    <td class="cart_total_amount" id="discount"><i class="ti-gift mr-5"></i><%= discountTotal.toFixed(2) %></td>
+                                                   
+                                                    <td class="cart_total_amount"> -र<span id="discount"><i class="ti-gift mr-5"></i><%= discount %></span></td>
                                                 </tr>
-                                                <%
-                                                    let totalSum = (total - discountTotal).toFixed(2) 
-                                                    if(totalSum > 200){
-                                                        %>
-                                                        <div class="alert alert-success">
+                                               
+                                                        <!-- <div class="alert alert-success">
                                                             <p style="color: green">Congratulations!!!!You're eligible for a coupon, couponCode: <%= coupon[0].couponCode %></p>
-                                                        </div>
-                                                    <%
-                                                    }
-                                                    %>
+                                                        </div> -->
+                                                   
                                                 <!-- <tr>
                                                     <td class="cart_total_label">Coupon Applied</td>
                                                     <td class="cart_total_amount" id="resultDis"> <i class="ti-gift mr-5"> %</i> </td>
@@ -150,7 +135,7 @@
                                                 <tr>
                                                     <td class="cart_total_label">Total</td>
                                                     
-                                                    <td class="cart_total_amount"><strong>र <span id="total" class="font-xl fw-900 text-brand"><%= totalSum  %></span></strong></td>
+                                                    <td class="cart_total_amount"><strong>र <span id="total" class="font-xl fw-900 text-brand"><%= totalPrice  %></span></strong></td>
                                                 </tr>
                                                 <%
                                             }
@@ -218,7 +203,7 @@
                             document.getElementById('total').innerHTML = res.distotal 
                             document.getElementById('discount').innerHTML = res.discount
                             console.log(res.prodPrice)
-                            document.getElementById(prodPrice).innerHTML = res.prodPrice
+                            // document.getElementById(prodPrice).innerHTML = res.prodPrice
                         }else{
                             swal("Buying limit is reached")
                         }

@@ -69,11 +69,9 @@ const prod_upload = multer({storage:prod_storage})
 
 
 adminRoute.get('/',auth.isLogout,adminController.loginLoad)
-
 adminRoute.post('/',adminController.verifyLogin)
-
 adminRoute.get('/home',auth.isLogin,adminController.dashboardLoad)
-
+adminRoute.get('/filter-chart',auth.isLogin,adminController.filterChart)
 adminRoute.get('/logout',auth.isLogin,adminController.logout)
 
 // adminRoute.get('/dashboard',adminController.adminDashboard)

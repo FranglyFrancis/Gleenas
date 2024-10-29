@@ -27,9 +27,9 @@
                         <div class="card-body">
 
                             <div class="row">
-                                <div class="col-lg-3">
+                                <div class="col-lg-2">
                                     <div class="mb-3">
-                                        <label class="form-label" for="period">Period:</label>
+                                        <label for="period" >Filter By:</label>
                                         <span>
                                             <select id="period" name="period" class="form-select">
                                                 <option value="" <%= period === '' ? 'selected' : '' %>>Custom</option>
@@ -40,18 +40,19 @@
                                         </span> 
                                     </div>
                                 </div>
-                                <div class="col-lg-3">
-                                    <div class="mb-3">
-                                        <label class="form-label" for="startDate">Start Date:</label>
-                                        <input type="date" id="startDate" class="form-control" name="startDate" value="<%= startDate ? new Date(startDate).toISOString().slice(0, 10) : '' %>">
+                                    <div class="col-lg-2" id="customStartDate">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="startDate">Start Date:</label>
+                                            <input type="date" id="startDate" class="form-control" name="startDate" value="<%= startDate ? new Date(startDate).toISOString().slice(0, 10) : '' %>">
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-lg-3">
-                                    <div class="mb-3">
-                                        <label class="form-label" for="endDate">End Date:</label>
-                                        <input type="date" id="endDate" name="endDate" class="form-control" value="<%= endDate ? new Date(endDate).toISOString().slice(0, 10) : '' %>">
+                                    <div class="col-lg-2" id="customEndDate">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="endDate">End Date:</label>
+                                            <input type="date" id="endDate" name="endDate" class="form-control" value="<%= endDate ? new Date(endDate).toISOString().slice(0, 10) : '' %>">
+                                        </div>
                                     </div>
-                                </div>
+                               
                                
                                 <div class="col-lg-3">
                                     <div class="mb-3">
@@ -77,9 +78,9 @@
                  <div class="col-lg-12">
                     <div class="card mb-4">
                         <h2>Report Summary</h2>
-                        <p>Total Sales Count: <%= totalSalesCount %></p>
-                        <p>Total Order Amount: ₹<%= totalOrderAmount.toFixed(2) %></p>
-                        <p>Total Discount: ₹<%= totalDiscount.toFixed(2) %></p>
+                        <p id="sales">Total Sales Count: <%= totalSalesCount %></p>
+                        <p id="totalOrderAmount">Total Order Amount: ₹<%= totalOrderAmount.toFixed(2) %></p>
+                        <p id="totalDiscount">Total Discount: ₹<%= totalDiscount.toFixed(2) %></p>
                         
                         <h2>Order Details</h2>
                         <table class="table table-hover" id="reportsTable">
@@ -113,78 +114,54 @@
     
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    // // Initialize empty chart
-    // let salesChart;
+ 
+    
+     // Show/Hide custom date range input
+     $('#period').change(function () {
+        const period = $(this).val();
+        if (period === '') {
+            $('#customStartDate').show();
+            $('#customEndDate').show();
+        } else {
+            $('#customStartDate').hide();
+            $('#customEndDate').hide();
+            $('#startDate').val('');
+            $('#endDate').val('');
+        }
+        });
 
-    // function renderSalesChart(salesCount, orderAmount, discount) {
-    //     const ctx = document.getElementById('salesChart').getContext('2d');
+         // Override form submission to fetch reports based on filter
+    $('#salesReportForm').submit(function (e) {
+        e.preventDefault();
+        fetchReports();
+    });
 
-    //     // Destroy previous chart if exists
-    //     if (salesChart) {
-    //         salesChart.destroy();
-    //     }
+    // Fetch reports function with date or period filters
+    function fetchReports(page = 1) {
+        const period = $('#period').val();
+        const startDate = $('#startDate').val();
+        const endDate = $('#endDate').val();
 
-    //     salesChart = new Chart(ctx, {
-    //         type: 'bar', // You can change it to 'line' or 'pie'
-    //         data: {
-    //             labels: ['Sales Count', 'Order Amount', 'Discount'],
-    //             datasets: [{
-    //                 label: 'Sales Metrics',
-    //                 data: [salesCount, orderAmount, discount],
-    //                 backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)'],
-    //                 borderColor: ['rgba(75, 192, 192, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)'],
-    //                 borderWidth: 1
-    //             }]
-    //         },
-    //         options: {
-    //             scales: {
-    //                 y: {
-    //                     beginAtZero: true
-    //                 }
-    //             }
-    //         }
-    //     });
-    // }
-
-    // Handle form submission to fetch data via AJAX and update chart
-    // $(document).ready(function() {
-    //     $('#salesReportForm').submit(function (e) {
-    //         e.preventDefault(); // Prevent form from reloading the page
-            
-    //         const startDate = $('#startDate').val();
-    //         const endDate = $('#endDate').val();
-    //         const period = $('#period').val();
-
-    //         // Make AJAX request to fetch data
-    //         $.ajax({
-    //             url: '/admin/sales-report',
-    //             method: 'GET',
-    //             data: { startDate, endDate, period },
-    //             success: function (response) {
-    //                 // Update the chart with new data
-    //                 renderSalesChart(response.totalSalesCount, response.totalOrderAmount, response.totalDiscount);
-                    
-    //                 // Optionally, update the summary fields if needed
-    //                 $('p:contains("Total Sales Count")').text('Total Sales Count: ' + response.totalSalesCount);
-    //                 $('p:contains("Total Order Amount")').text('Total Order Amount: ₹' + response.totalOrderAmount.toFixed(2));
-    //                 $('p:contains("Total Discount")').text('Total Discount: ₹' + response.totalDiscount.toFixed(2));
-    //             },
-    //             error: function (error) {
-    //                 console.error('Error fetching sales data:', error);
-    //             }
-    //         });
-    //     });
-    // });
+        // Prepare query parameters based on filters
+        const query = new URLSearchParams({
+            page,
+            period,
+            startDate,
+            endDate
+        }).toString();
 
     //function to fetch paginated products via AJAX
-    function fetchReports(page = 1){
-        fetch(`/admin/paginate-reports?page=${page}`)
+        fetch(`/admin/paginate-reports?${query}`)
         .then(response => response.json())        
         .then( data => {
-            const { reports, currentPage, totalPages } = data;
-        console.log('hello')
+            const { totalReports, reports, currentPage, totalPages, totalOrderAmount, totalDiscount } = data;
+             
+            // Optionally, update the summary fields if needed
+              $('p:contains("Total Sales Count")').text('Total Sales Count: ' + totalReports);
+                $('p:contains("Total Order Amount")').text('Total Order Amount: ₹' + totalOrderAmount);
+                $('p:contains("Total Discount")').text('Total Discount: ₹' + totalDiscount);
 
-            console.log(data)
+            console.log("rer",reports.length)
             //update table with reports
             const reportsTableBody = document.querySelector('#reportsTable tbody');
 
@@ -206,8 +183,13 @@
 
                     }
             }
+            
             reportsTableBody.innerHTML += reportData;
+            if(reports.length === 0){
+               
+                 reportsTableBody.innerHTML +=  `<h3>No sales</h3>`;
 
+            }
             //update pagination controls
             const pagination = document.getElementById('pagination')
             pagination.innerHTML = ''
@@ -239,4 +221,3 @@
     })
 </script>
 <%- include('../partials/footer') -%>
-

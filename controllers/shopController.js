@@ -123,8 +123,8 @@ const filterProduct = async(req,res) => {
         const page = parseInt(req.query.page) || 1;
 console.log("queryy",req.query.page)
 
-        const limit = 5;
-        const skip = (page - 1) * limit;
+        let limit = 5;
+        let skip = (page - 1) * limit;
         let filter = {};
         const sort = {};
         let totalProducts,products
@@ -133,7 +133,7 @@ console.log("queryy",req.query.page)
             if (req.query.category) {
                     console.log("category",req.query.category)
                     filter.category = req.query.category.split(',');
-                    console.log(filter)
+                    console.log('filter,',filter.category)
             }
 
             // if (req.query.minPrice) {
@@ -151,26 +151,30 @@ console.log("queryy",req.query.page)
                 filter = filter.category
                 // console.log(filter)
                 // totalProducts = await Product.countDocuments(filter);
-                products = await Product.find({block:false}).populate({path:'category', match :{name: {'$in': filter}, block:false}}).sort(sort).limit(limit).skip(skip).exec();
+                products = await Product.find({block:false}).populate({path:'category', match :{name: {'$in': filter}, block:false}}).sort(sort).exec();
+console.log('prod',products)
+                
                 products = products.filter(product => product.category)
-
+console.log('prod',products)
                 //find offer in products
                 offerProd = await offerProducts(products)
 
                 totalProducts = await Product.find({block:false}).populate({path:'category', match :{name: {'$in': filter}, block:false}}).exec()
                 totalProducts = totalProducts.filter(product => product.category)
-               
+                products = products.slice(skip, skip + limit);
                 
             }
             else{
-                products = await Product.find({block:false}).populate({path:'category', match : {block:false}}).sort(sort).limit(limit).skip(skip).exec();
+                products = await Product.find({block:false}).populate({path:'category', match : {block:false}}).sort(sort).exec();
                 products = products.filter(product => product.category)
+    console.log('prod',products)
 
                 //find offer in products
                 offerProd = await offerProducts(products)
 
                 totalProducts = await Product.find({block:false}).populate({path:'category', match : {block:false}}).exec()
                 totalProducts = totalProducts.filter(product => product.category)
+                products = products.slice(skip, skip + limit);
 
             }
         }else{
@@ -184,7 +188,6 @@ console.log("queryy",req.query.page)
                 totalProducts = await Product.find({block:false}).populate({path:'category', match : {block:false}}).exec()
                 totalProducts = totalProducts.filter(product => product.category)
         }
-console.log(products)
 
         res.json({
             products,

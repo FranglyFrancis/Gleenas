@@ -108,6 +108,8 @@ const cartLoad = async(req,res)=>{
                 discountTotal = discountTotal + ((subTotal[i].orders[0].subtotal) * cartItems[i].product.discountApplied * 0.01)
                 prodPrice = subTotal[i].orders[0].subtotal
                 console.log("ind",prodPrice)
+                console.log("ind",subTotal[i].orders[0].subtotal)
+
                 discount = discountTotal.toFixed(2)
                 // discountTotalPer = discountTotalPer + cartItems[i].product.discountApplied
             }
@@ -119,7 +121,7 @@ const cartLoad = async(req,res)=>{
                 discount = discountTotal.toFixed(2)
             }
 
-            res.render('cart',{ cart:cartItems, user:user, coupon, cartCount:cartLength, wishlistCount:wishlistLength, categories:catData, total:totalPrice, subtotal:subTotal, discount, prodPrice})    
+            res.render('cart',{ cart:cartItems, user:user, coupon, cartCount:cartLength, wishlistCount:wishlistLength, categories:catData, total:totalValue.total, subtotal:subTotal, discount, prodPrice})    
                  
         } 
         
@@ -514,7 +516,6 @@ const checkout = async(req,res) =>{
                         })
                 }else{
 
-                console.log('a', subTotal[0].subtotal)
 
                     res.render('checkout',
                         { 
@@ -527,7 +528,6 @@ const checkout = async(req,res) =>{
                         })  
                 }
             }else{
-                console.log('d', pendingOrderItems.length)
                 res.render('checkout',
                     { 
                         message:'Sorry, all the products are not available to complete payment',
@@ -545,6 +545,7 @@ const checkout = async(req,res) =>{
             //get products in cart
             cartItems = await cartProducts(userId)
             subTotal = totalValue.products
+            console.log(subTotal[i].orders[0].subtotal)
             if(cartItems){
                 let discountTotal = 0
                 for(i=0; i<cartItems.length; i++){

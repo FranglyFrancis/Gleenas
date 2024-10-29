@@ -143,9 +143,8 @@ const placeOrder = async(req,res)=>{
 
 const verifyPayment = async(req,res)=>{
     try{
-    console.log('payment and order details: ', req.body);
-        // let secret = process.env.RAZORPAY_KEY_SECRET
-        let secret = 'jFGu9n4h83jYtIH0CKZKasfu'
+        console.log('payment and order details: ', req.body);
+        let secret = process.env.KEY_SECRET
         let orders, orderId, updateStock
         let hash = crypto.createHmac('sha256', secret)
             .update(req.body.order.id + '|' + req.body.payment.razorpay_payment_id)
@@ -426,9 +425,9 @@ const formattedDate = async(orders) =>{
 const downloadInvoice = async(req,res) =>{
    try {
     const order = await Order.findOne({ _id: req.query.id });
-    pendingOrderItems = await cartController.pendingOrderProducts(req.query.id)
-    console.log(pendingOrderItems)
-
+    let pendingOrderItems = await cartController.pendingOrderProducts(req.query.id)
+    let user = req.session.user
+    console.log('user',user)
         if (!order) {
             return res.status(404).send('Order not found');
         }
@@ -442,31 +441,64 @@ const downloadInvoice = async(req,res) =>{
 
         // Pipe the PDF document to the response
         doc.pipe(res);
+        // Add company logo
+        doc.image("public/user_assets/assets/imgs/theme/gleenas.png", 50, 50, { width: 100 });
 
         // Add content to the PDF (this is a simple example)
-        doc.fontSize(25).text('Invoice', 100, 50);
+        doc.fontSize(25).text('Invoice', 50, 150);
         doc.fontSize(18).text('Gleenas', pageWidth - doc.widthOfString('Gleenas') - 100, 60);
         doc.fontSize(12).text('Abc, City', pageWidth - doc.widthOfString('Abc, City') - 100, 85);
         doc.fontSize(12).text('Contact: +91-123456789', pageWidth - doc.widthOfString('Contact: +91-123456789') - 100, 100);
-        doc.fontSize(12).text(`Order ID: ${order.orderId}`, 100, 120);
-        doc.fontSize(12).text(`Payment method: ${order.paymentMethod}`, 100, 140);
+        doc.fontSize(12).text(`Order ID: ${order.orderId}`, 50, 200);
+        doc.fontSize(12).text(`Name: ${user.name}`, 50, 220);
+        doc.fontSize(12).text(`Payment method: ${order.paymentMethod}`, 50, 240);
+        doc.fontSize(12).text(`Delivery details: ${order.deliveryDetails}`, 50, 260);
+
         // Table Headers
-        doc.fontSize(12).text('Product Name', 100, 180);
-        doc.fontSize(12).text('Quantity', 300, 180);
-        doc.fontSize(12).text('Price', 400, 180);
+        doc.fontSize(12).text('Product Name', 50, 330);
+        doc.fontSize(12).text('Quantity', 250, 330);
+        doc.fontSize(12).text('Price', 450, 330);
 
         // Table Rows
-        let rowY = 200;
+        let rowY = 370, subtotal = 0
         pendingOrderItems.forEach(item => {
-            doc.fontSize(12).text(item.product.name, 100, rowY);
-            doc.fontSize(12).text(item.quantity, 300, rowY);
-            doc.fontSize(12).text(item.product.price, 400, rowY);
+            doc.fontSize(11).text(item.product.name, 50, rowY);
+            doc.fontSize(11).text(item.quantity, 250, rowY);
+            doc.fontSize(11).text(item.product.price, 450, rowY);
+             // Calculate subtotal
+          subtotal += item.quantity * item.product.price;
             rowY += 20;
         });
-
-        // Add Total
+        // Add subtotal, discount, tax, and total amount
         rowY += 20;
-        doc.fontSize(14).text(`Total Amount: ₹${order.totalAmount}`, 100, rowY);
+        const discount = order.discount || 0;
+        const taxRate = 0; // example 0% tax rate
+        const taxAmount = subtotal * taxRate;
+        const totalAmount = subtotal + taxAmount - discount;
+        // Add subtotal, discount, tax, and total amount
+        rowY += 20;
+
+        // Calculate the x position for right alignment
+        const rightX = pageWidth - 100; // 50 pixels from the right edge
+
+        // Subtotal
+        const subtotalText = `Subtotal: ₹${subtotal.toFixed(2)}`;
+        doc.fontSize(11).text(subtotalText, rightX - doc.widthOfString(subtotalText), rowY);
+        rowY += 20;
+
+        // Discount
+        const discountText = `Discount: -₹${discount.toFixed(2)}`;
+        doc.fontSize(11).text(discountText, rightX - doc.widthOfString(discountText), rowY);
+        rowY += 20;
+
+        // Tax (assuming you want to display tax as 0% for now)
+        const taxText = `Tax (0%): ₹${taxAmount.toFixed(2)}`;
+        doc.fontSize(11).text(taxText, rightX - doc.widthOfString(taxText), rowY);
+        rowY += 20;
+
+        // Total Amount
+        const totalAmountText = `Total Amount: ₹${totalAmount.toFixed(2)}`;
+        doc.fontSize(14).text(totalAmountText, rightX - doc.widthOfString(totalAmountText), rowY);
 
         // Finalize the PDF and end the stream
         doc.end();

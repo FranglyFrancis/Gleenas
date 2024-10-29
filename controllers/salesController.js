@@ -31,18 +31,18 @@ const getSalesReport = async (req, res) => {
         const totalSalesCount = orders.length;
         const totalOrderAmount = orders.reduce((sum, order) => sum + order.totalAmount, 0);
         const totalDiscount = orders.reduce((sum, order) => sum + (order.discount || 0), 0);
-        console.log(totalSalesCount)
-         // If it's an AJAX request (for charts), return JSON data
-         if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-            res.json({
-                totalSalesCount,
-                totalOrderAmount,
-                totalDiscount,
-                period,
-                startDate,
-                endDate
-            });
-        }else{
+
+        // // If it's an AJAX request (for charts), return JSON data
+        //  if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+        //     res.json({
+        //         totalSalesCount,
+        //         totalOrderAmount,
+        //         totalDiscount,
+        //         period,
+        //         startDate,
+        //         endDate
+        //     });
+        // }else{
             // Render the report
             res.render('salesReport', {
                 orders,
@@ -53,7 +53,7 @@ const getSalesReport = async (req, res) => {
                 endDate,
                 period
             });
-        }
+        // }
 
         
     } catch (error) {
@@ -190,30 +190,63 @@ const downloadExcel = async(req,res)=>{
 }
 
 const paginateReports = async(req,res) =>{
-    const page = parseInt(req.query.page) || 1; // Current page, default is 1
+    const { page = 1, period, startDate, endDate } = req.query;
     const limit = parseInt(req.query.limit) || 10; // Items per page, default is 10
-  console.log(page)
-    try {
-      // Fetch reports with pagination
-      const reports = await Order.find().sort({createdAt:-1})
-        .skip((page - 1) * limit)
-        .limit(limit);
-        console.log(reports)
-  
-      // Get total number of orders for pagination
-      const totalOrders = await Order.countDocuments();
-      console.log(totalOrders)
-  
-      // Respond with paginated data and metadata
-      res.json({
-        reports,
-        currentPage: page,
-        totalPages: Math.ceil(totalOrders / limit),
-      });
-    }
-    catch(error){[
-        console.log(error.message)
-    ]}
+    let filter = {};
+
+    try{
+        // Calculate the date range based on `period` if specified
+        if (period) {
+            const today = new Date();
+            switch (period) {
+                case 'day':
+                    filter.createdAt = {
+                        $gte: new Date(today.setDate(today.getDate() - 1)),
+                    };
+                    break;
+                case 'week':
+                    filter.createdAt = {
+                        $gte: new Date(today.setDate(today.getDate() - 7)),
+                    };
+                    break;
+                case 'month':
+                    filter.createdAt = {
+                        $gte: new Date(today.setMonth(today.getMonth() - 1)),
+                    };
+                    break;
+            }
+        } else if (startDate && endDate) {
+            // Custom date range
+            filter.createdAt = {
+                $gte: new Date(startDate),
+                $lte: new Date(endDate),
+            };
+        }
+
+        // Fetch reports with pagination
+        const reports = await Order.find(filter)
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .sort({ createdAt: -1 }); // Sort by latest orders
+
+        // Count total documents for pagination
+        const totalReports = await Order.countDocuments(filter);
+        const totalPages = Math.ceil(totalReports / limit);
+        const totalOrderAmount = (reports.reduce((sum, order) => sum + order.totalAmount, 0)).toFixed(2);
+        const totalDiscount = (reports.reduce((sum, order) => sum + (order.discount || 0), 0)).toFixed(2);
+
+        res.json({
+            reports,
+            totalReports,
+            currentPage: parseInt(page),
+            totalPages,
+            totalOrderAmount,
+            totalDiscount
+        });
+} catch (error) {
+    console.error('Error fetching reports:', error);
+    res.status(500).json({ error: 'Failed to fetch reports' });
+}
 }
 
 module.exports = {
