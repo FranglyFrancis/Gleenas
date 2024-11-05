@@ -168,7 +168,7 @@
                                     <tr>
                                         
                                         <th>Total</th>
-                                        <td colspan="2" class="product-subtotal" ><span id="totalPrice" class="font-xl text-brand fw-900">र<%= offerPrice %></span></td>
+                                        <td colspan="2" class="product-subtotal" >र<span id="totalPrice" class="font-xl text-brand fw-900"><%= offerPrice %></span></td>
                                   
                                     </tr>      
                                 </tbody>
@@ -192,12 +192,12 @@
                                             <input class="form-check-input" required="" type="radio" name="payment_option" id="exampleRadios5" value="Online" checked="">
                                             <label class="form-check-label" for="exampleRadios5" data-bs-toggle="collapse" data-target="#paypal" aria-controls="paypal">Online</label>
                                             <div class="form-group collapse in" id="paypal">
-                                                <p class="text-muted mt-5">Pay via PayPal; you can pay with your credit card if you don't have a PayPal account.</p>
+                                                <p class="text-muted mt-5">Pay via cards/netbanking.</p>
                                             </div>
                                         </div>
                                         
                                     <div>
-                                        <p style="color: red" id="codMessage"></p>
+                                        <p style="color: red" id="codErrorMessage"></p>
                                     </div>
                                    
                                     </div>
@@ -282,7 +282,8 @@
         radio.addEventListener('change', function() {
             const selectedOption = this.value;
             let total = document.getElementById('totalPrice').textContent
-            let errorMessage = document.getElementById('codMessage')
+            console.log("TOTAL",total)
+            let errorMessage = document.getElementById('codErrorMessage')
             if(selectedOption === 'COD' && total > 1000){
                 errorMessage.innerText = `Sorry, COD is not allowed for orders above 1000`
                 document.getElementById('placeOrder').disabled = true

@@ -96,8 +96,6 @@ const dashboardLoad = async(req,res)=>{
         const totalDiscount = orders.reduce((sum, order) => sum + (order.discount || 0), 0);
         const userData = await User.findOne({_id:req.session.user_id})
         const bestSellingProducts = await getBestSellingProducts(); // Aggregate query for products
-        console.log("jbjhb",bestSellingProducts)
-
         const bestSellingCategories = await getBestSellingCategories(); // Aggregate query for categories
         const totProducts = await Product.find({})
         const bestProducts = bestSellingProducts.map(item => item._id);// Extract product names
