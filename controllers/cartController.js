@@ -1,11 +1,10 @@
 const { ObjectId } = require('mongodb')
 const Cart = require("../models/Cart")
-const Product = require("../models/productModel")
-const User = require("../models/userModel")
-const addressController = require("../controllers/addressController")
+const Product = require("../models/Product")
+const User = require("../models/User")
+const addressController = require("./addressController")
 const wishlistController = require("./wishlistController")
-const Category = require('../models/categoryModel')
-const { default: swal } = require('sweetalert')
+const Category = require('../models/Category')
 const Coupon = require('../models/Coupon')
 const Order = require('../models/Order')
 
@@ -545,7 +544,6 @@ const checkout = async(req,res) =>{
             //get products in cart
             cartItems = await cartProducts(userId)
             subTotal = totalValue.products
-            console.log(subTotal[i].orders[0].subtotal)
             if(cartItems){
                 let discountTotal = 0
                 for(i=0; i<cartItems.length; i++){

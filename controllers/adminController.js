@@ -1,6 +1,6 @@
-const User = require("../models/userModel")
+const User = require("../models/User")
 const Order = require("../models/Order")
-const Product = require('../models/productModel')
+const Product = require('../models/Product')
 const orderController = require('../controllers/orderController')
 const bcrypt = require("bcrypt")
 const randomString = require("randomstring")
@@ -96,6 +96,8 @@ const dashboardLoad = async(req,res)=>{
         const totalDiscount = orders.reduce((sum, order) => sum + (order.discount || 0), 0);
         const userData = await User.findOne({_id:req.session.user_id})
         const bestSellingProducts = await getBestSellingProducts(); // Aggregate query for products
+        console.log("jbjhb",bestSellingProducts)
+
         const bestSellingCategories = await getBestSellingCategories(); // Aggregate query for categories
         const totProducts = await Product.find({})
         const bestProducts = bestSellingProducts.map(item => item._id);// Extract product names
@@ -114,7 +116,7 @@ const dashboardLoad = async(req,res)=>{
                 totProducts, discount:totalDiscount.toFixed(2),
                 startDate,
                 endDate,
-                period
+                period,
             });
         }else{
             // Render the report
@@ -128,7 +130,7 @@ const dashboardLoad = async(req,res)=>{
                 totProducts, discount:totalDiscount.toFixed(2),
                 startDate,
                 endDate,
-                period
+                period,
             });
         }
   
@@ -237,6 +239,7 @@ const filterChart = async(req,res)=>{
          const totalOrderAmount = (reports.reduce((sum, order) => sum + order.totalAmount, 0)).toFixed(2);
          const totalDiscount = (reports.reduce((sum, order) => sum + (order.discount || 0), 0)).toFixed(2);
          res.json({
+            sales:reports.length,
             totalReports,
             totalOrderAmount,
             totalDiscount
@@ -391,7 +394,9 @@ module.exports = {
     unblockUser,
     customerDetail,
     paginateCustomers,
-    filterChart
+    filterChart,
+    getBestSellingProducts,
+    getBestSellingCategories
 }
 
 

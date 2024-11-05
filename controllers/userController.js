@@ -1,12 +1,10 @@
-const User = require('../models/userModel')
-const OTP = require('../models/otpModel')
-const Category = require("../models/categoryModel")
-const Product = require("../models/productModel")
-const cartController = require("../controllers/cartController")
-const wishlistController = require("../controllers/wishlistController")
-const otpController = require("../controllers/otpController")
+const User = require('../models/User')
+const Category = require("../models/Category")
+const Product = require("../models/Product")
+const cartController = require("./cartController")
+const wishlistController = require("./wishlistController")
+const adminController = require("./adminController")
 const bcrypt = require('bcrypt')
-const otpCache = {}
 
 const securePassword = async(password)=>{
     try{
@@ -23,14 +21,16 @@ const homeLoad = async(req,res,next)=>{
     try{
        
         const catData = await Category.find({block:false})
-        // let catArray = []
-        // catData.forEach((catData)=>{
-        //     catArray.push(catData.name)
-        // })
         const prodData = await Product.find({block:false}).populate({path:'category', match : {block:false}}).exec();
 
-        // const prodData = await prodPopulate.find({'category.name':{$in:catArray},block:false})
-        // console.log("user",req.session.user)
+        // const bestSellingProducts = await adminController.getBestSellingProducts(); // Aggregate query for products
+        // console.log(bestSellingProducts)
+        // const bestSellingCategories = await adminController.getBestSellingCategories(); // Aggregate query for categories
+        // const totProducts = await Product.find({}).sort({updatedAt:-1})
+        // const bestProducts = bestSellingProducts.map(item => item._id);// Extract product names
+        // const bestProductsCount =  bestSellingProducts.map(item => item.totalSold) // Extract sales count
+        // const bestCategories = bestSellingCategories.map(item => item._id);// Extract category names
+        // const bestCategoriesCount =  bestSellingCategories.map(item => item.totalSold) // Extract sales count
 
         let  userId,user
         let cartLength = 0, wishlistLength = 0
@@ -41,9 +41,10 @@ const homeLoad = async(req,res,next)=>{
             user = await User.findById({_id:userId})  
             req.session.user =  user
             wishlistLength = await wishlistController.getWishlistCount(userId)
-            cartLength = await cartController.getCartCount(userId)
-            console.log(catData)
-            res.render('home',{products:prodData, categories:catData, user:req.session.user, cartCount:cartLength, wishlistCount:wishlistLength })
+            cartLength = await cartController.getCartCount(userId)            
+            res.render('home',{products:prodData, categories:catData, user:req.session.user, cartCount:cartLength, wishlistCount:wishlistLength ,
+                               
+            })
         }
     
     }
@@ -160,12 +161,6 @@ const verifyLogin = async(req,res)=>{
             const matchPassword = await bcrypt.compare(password,userData.password)
             if(matchPassword){
 
-                // if(userData.is_verified===0){
-                //     res.render('login',{message:"Please verify your email"})
-                // }
-                // else{
-                //     res.redirect('/home',{message:"Successfully logged in"})
-                // }
                 if(userData.is_admin === 1){
                     res.render('login',{message:'Email or password is incorrect'})
                 }
@@ -206,8 +201,22 @@ const userLogout = async(req,res)=>{
 
 const blockedUser = async(req,res)=>{
     try {
+        const user = req.query.user
+        const isBlock = await User.findByIdAndUpdate({_id:user._id},{
+            $set:{block:true}
+        })
+        res.render('customers')
+    } catch (error) {
+        
+    }
+}
+const unblockUser = async(req,res)=>{
+    try {
         const user = req.session.user
-        res.render('blockedUser')
+        const isUnblock = await User.findByIdAndUpdate({_id:user._id},{
+            $set:{block:false}
+        })
+        res.render('customers')
     } catch (error) {
         
     }
@@ -222,6 +231,7 @@ module.exports = {
     verifyLogin,
     homeLoad,
     userLogout,
-    blockedUser
+    blockedUser,
+    unblockUser
     
 }

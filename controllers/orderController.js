@@ -1,11 +1,11 @@
 const { ObjectId } = require("mongodb")
-const cartController = require("../controllers/cartController")
+const cartController = require("./cartController")
 const wishlistController = require("./wishlistController")
 const Cart = require("../models/Cart")
-const Product = require("../models/productModel")
+const Product = require("../models/Product")
 const Order = require("../models/Order")
 const Wallet = require("../models/Wallet")
-const Category = require("../models/categoryModel")
+const Category = require("../models/Category")
 const PDFDocument = require('pdfkit')
 const {format} = require("date-fns");
 const Razorpay = require("razorpay")
@@ -27,6 +27,7 @@ const placeOrder = async(req,res)=>{
         const orderId = orderDetails.order.orderId
         let onlineSuccess = false
         let offerPrice, discount, i=0
+        let status = payment === 'COD' ? 'placed': 'pending'
 
         //If it is a pending order
         if(orderId){
@@ -68,13 +69,13 @@ const placeOrder = async(req,res)=>{
             //Custom order ID generation
             const generateOrderId = ()=>{
                 const prefix = 'ORD'
-                const timestamp = Date.now()
-                const randomString = Math.random().toString(36)
+                const timestamp = Date.now().toString(36)//to reduce length
+                const randomString = Math.floor(Math.random() * 4);
     
                 return `${prefix}${timestamp}${randomString}`
             }
     
-            let status = payment === 'COD' ? 'placed': 'pending'
+            
     
                 let orderObj = new Order({
                     orderId: ""+generateOrderId(),
@@ -92,9 +93,9 @@ const placeOrder = async(req,res)=>{
                 const formattedDate = format(new Date(orderObj.createdAt), 'yyyy-MM-dd HH:mm:ss');
                 console.log(formattedDate);
         }
-        
+
         //COD payment
-        if(payment === 'placed'){ 
+        if(status === 'placed'){ 
             //update stock count
             orderData.products.forEach((async product => {
                 const updateStock = await Product.updateOne({_id: product.item},
@@ -108,6 +109,7 @@ const placeOrder = async(req,res)=>{
              if(!orderId){
                 //clear cart
                 const clearCart = await Cart.deleteOne({user:user._id})
+                console.log("cleared")
             }
             res.status(200).json({codSuccess:true,data:orderData,orderedDate:formattedDate})
         }
@@ -127,6 +129,7 @@ const placeOrder = async(req,res)=>{
                         console.log(err)
                     }else{
                         // console.log("Razorpay order",order)
+                        req.session.pendingId = orderId
                         res.json({order,onlineSuccess:true,data:orderData,orderedDate:formattedDate})
                     }
                     
@@ -144,21 +147,22 @@ const placeOrder = async(req,res)=>{
 const verifyPayment = async(req,res)=>{
     try{
         console.log('payment and order details: ', req.body);
+        const paymentDetails = req.body
+        //to get payment method
+        const payment = await instance.payments.fetch(paymentDetails.payment.razorpay_payment_id)
+        console.log("paymentMethod",payment.method)
         let secret = process.env.KEY_SECRET
         let orders, orderId, updateStock
         let hash = crypto.createHmac('sha256', secret)
             .update(req.body.order.id + '|' + req.body.payment.razorpay_payment_id)
             .digest('hex')
-        console.log('hash: ', hash);
-        console.log('signature: ', req.body.payment.razorpay_signature);
         orderId = req.body.order.receipt
-        console.log("dddorderId",orderId)
 
         if (hash === req.body.payment.razorpay_signature) {
 
             //update status
             orders = await Order.updateOne({ orderId: orderId },
-                {$set:{status:'placed'}})
+                {$set:{status:'placed',paymentMethod:payment.method}})
 
             //update stock
             let order = await Order.findOne({orderId:orderId})
@@ -171,8 +175,8 @@ const verifyPayment = async(req,res)=>{
             }))
 
             //If it is a pending order
-            if(req.session.pendingOrderId){
-                delete req.session.pendingOrderId
+            if(req.session.pendingId){
+                delete req.session.pendingId
             }else{
                 //clear cart   
                 let userId = req.session.user._id 

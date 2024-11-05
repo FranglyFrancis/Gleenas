@@ -37,7 +37,7 @@
 <script>
     // Function to fetch paginated coupons via AJAX
     function fetchCoupons(page = 1) {
-      fetch(`/admin/paginate-coupons?page=${page}`)
+      fetch(`/admin/coupons/paginate?page=${page}`)
         .then(response => response.json())
         .then(data => {
           const { coupons, currentPage, totalPages } = data;
@@ -66,20 +66,21 @@
                                     </td>
                                     <td>
                                     ${coupons[i].block === false ? 
-                                                `<a href="/admin/block-coupon?id=${coupons[i]._id}">
-                                                    <span class="badge rounded-pill alert-success">Active</span>
-                                                </a>`
-                                           :
-                                                `<a href="/admin/unblock-coupon?id=${coupons[i]._id}">
-                                                    <span class="badge rounded-pill alert-danger">Blocked</span>
-                                                </a>`
-                                            }
+                                    `<a href="javascript:void(0);" onclick="toggleCouponStatus('${coupons[i]._id}', 'block')">
+                                        <span class="badge rounded-pill alert-success">Active</span>
+                                    </a>`
+                                :
+                                    `<a href="javascript:void(0);" onclick="toggleCouponStatus('${coupons[i]._id}', 'unblock')">
+                                        <span class="badge rounded-pill alert-danger">Blocked</span>
+                                    </a>`
+                                }
                                     </td>
                                     <td class="text-end">
                                         <div class="dropdown">
                                             <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
                                             <div class="dropdown-menu">
-                                                <a  href="/admin/edit-coupon?id=${coupons[i]._id}" class="dropdown-item">Edit info</a>
+                                                <a  href="/admin/coupons-edit?id=${coupons[i]._id}" class="dropdown-item">Edit info</a>
+                                                
                                             </div>
                                         </div>
                                     </td>
@@ -122,5 +123,29 @@
     document.addEventListener('DOMContentLoaded', () => {
       fetchCoupons();
     });
+
+    function toggleCouponStatus(couponId,action){
+      fetch(`/admin/coupons/${couponId}/${action}`, {
+    method: 'PATCH',
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+            return response.json();
+        } else {
+            throw new Error("Expected JSON but received HTML");
+        }
+    })
+    .then(data => {
+        console.log(data); // handle JSON data
+        location.reload()
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+    });
+    }
 </script>
 

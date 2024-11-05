@@ -17,6 +17,6 @@ const otpVerificationSchema = new mongoose.Schema({
     }
 })
 
-const userOtpVerification = mongoose.model('userOtpVerification', otpVerificationSchema)
+const userOtpVerification = mongoose.model('otp', otpVerificationSchema)
 
 module.exports = userOtpVerification

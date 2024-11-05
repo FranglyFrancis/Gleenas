@@ -1,14 +1,11 @@
-const User = require('../models/userModel')
+const User = require('../models/User')
 const nodemailer = require('nodemailer')
 const { google } = require('googleapis');
 const dotenv = require('dotenv');
 const crypto = require('crypto');
 dotenv.config();
-
 // Your OAuth2 credentials
 const { AUTH_EMAIL, AUTH_PASS, OTP_EXPIRATION_MINUTES } = process.env
-const REDIRECT_URI = "http://localhost:4000/google/callback"
-
 const bcrypt = require('bcrypt')
 const userOtpVerification = require('../models/OTP')
 

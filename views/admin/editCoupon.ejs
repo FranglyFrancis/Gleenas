@@ -1,0 +1,94 @@
+<%- include('../partials/header')-%>
+<section class="content-main">
+    <div class="row">
+        <div class="col-6">
+            <div class="content-header">
+                <h2 class="content-title">Edit Coupon</h2>
+                <form id="editCouponForm">
+                <div>
+                    <button class="btn btn-md rounded font-sm hover-up" type="submit">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h6>1. General info</h6>
+                        </div>
+                        <div class="col-md-9">
+                            <input type="hidden" name="id" value="<%= id %>">
+
+                            <div class="mb-4">
+                                <label class="form-label">Coupon code</label>
+                                <input name="couponCode" value="<%= coupon.couponCode %>" class="form-control" required min="" disabled>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Description</label>
+                                <input placeholder="Type here" id="description" name="description" value="<%= coupon.description %>" class="form-control" rows="2">
+                            </div>
+                            
+                        </div> <!-- col.// -->
+                    </div> <!-- row.// -->
+                    <hr class="mb-4 mt-0">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h6>2. Pricing</h6>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="mb-4">
+                                <label class="form-label">Discount Value</label>
+                                <input type="number" name="disPrice" id="discountPercent" value="<%= coupon.discountPercent %>" placeholder="Enter below 60%" min="0" max="60" class="form-control">
+                            </div>
+                           
+                            <div class="mb-4">
+                                <label class="form-label">Minimum order value</label>
+                                <input type="number" name="minOrder" min="100" id="minOrderValue" value="<%= coupon.minOrderValue %>" max="10000" placeholder="Type here" class="form-control">
+                            </div>
+                        </div> <!-- col.// -->
+                    </div> <!-- row.// -->
+                   
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</section> <!-- content-main end// -->
+<script>
+    document.getElementById('editCouponForm').addEventListener('submit', async function(event) {
+        event.preventDefault(); // Prevent traditional form submission
+
+        const couponId = "<%= coupon._id %>"; // Get the coupon ID dynamically
+        const description = document.getElementById('description').value;
+        const discountPercent = document.getElementById('discountPercent').value;
+        const minOrderValue = document.getElementById('minOrderValue').value;
+
+        try {
+            const response = await fetch(`/admin/coupons/${couponId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ description, discountPercent, minOrderValue })
+            });
+
+            if (response.ok) {
+                // Handle successful update (e.g., redirect or show a message)
+                swal("Coupon updated successfully!");
+                window.location.href = '/admin/coupons'; // Redirect to the coupon list
+            } else {
+                // Handle errors from the server
+                const errorData = await response.json();
+                alert("Failed to update coupon: " + errorData.message);
+            }
+        } catch (error) {
+            console.error("Error updating coupon:", error);
+            alert("An error occurred while updating the coupon.");
+        }
+    });
+</script>
+<%- include('../partials/footer')-%>

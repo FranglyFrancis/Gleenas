@@ -1,5 +1,5 @@
 const Address = require("../models/Address")
-const User = require("../models/userModel")
+const User = require("../models/User")
 
 const addAddress = async(req,res)=>{
     try {

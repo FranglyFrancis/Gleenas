@@ -1,9 +1,7 @@
 const { ObjectId } = require('mongodb')
 const WishList = require("../models/Wishlist")
-const Product = require("../models/productModel")
-const User = require("../models/userModel")
-const Category = require("../models/categoryModel")
-const swal = require('sweetalert')
+const Product = require("../models/Product")
+const Category = require("../models/Category")
 const Cart = require("../models/Cart")
 
 
@@ -28,6 +26,7 @@ const wishlistLoad = async(req,res)=>{
                     await WishList.findByIdAndUpdate({_id:items._id},{$pull:{products:{item:items.item}}})
                     wishListItems = await wishlistProducts(userId)
                     wishlistLength = await getWishlistCount(userId)
+                    console.log(wishlistLength)
                     if(wishlistLength === 0){
                        return res.render('wishlist',{message:"The product is currently not available, sorry for the inconvience", user:req.session.user, categories:catData, wishListItems, wishlistCount:0})
                     }

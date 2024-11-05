@@ -1,10 +1,9 @@
-const Product = require('../models/productModel')
-const Category = require('../models/categoryModel')
+const Product = require('../models/Product')
+const Category = require('../models/Category')
 const cartController = require('./cartController')
 const wishlistController = require('./wishlistController')
 const categoryController = require('./categoryController')
 const shopController = require('./shopController')
-const Order = require('../models/Order')
 
 const productList = async(req,res)=>{
     try {
@@ -48,7 +47,6 @@ const addProduct = async(req,res)=>{
         }
 
         let { name,description,category,quantity,unit,isFeatured,price,discount,countInStock }= req.body
-        console.log(req.body)
         name = name.trim()
 
         let categoryRef = await Category.findOne({  name:category   })
@@ -58,11 +56,11 @@ const addProduct = async(req,res)=>{
 
         //Validate form fields
         if(name.length===0){
-            return res.render('addProduct',{categories:catData,message:"Invalid name"})
+            return res.render('addProduct',{categories:catData,message:"Invalid name!!"})
         }
-        if(!/^[a-zA-Z]*$/.test(name)){
-            return res.render('addProduct',{categories:catData,message:"Invalid name"})
-        }
+        // if(!/^[a-zA-Z]*$/.test(name)){
+        //     return res.render('addProduct',{categories:catData,message:"Invalid name"})
+        // }
         
        
             const product = new Product({

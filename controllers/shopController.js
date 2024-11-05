@@ -1,8 +1,8 @@
-const User = require('../models/userModel')
-const Category = require("../models/categoryModel")
-const Product = require("../models/productModel")
-const cartController = require("../controllers/cartController")
-const wishlistController = require("../controllers/wishlistController")
+const User = require('../models/User')
+const Category = require("../models/Category")
+const Product = require("../models/Product")
+const cartController = require("./cartController")
+const wishlistController = require("./wishlistController")
 const { connect } = require('mongoose')
 
 const shopLoad = async(req,res) =>{

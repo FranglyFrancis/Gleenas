@@ -87,7 +87,12 @@
                                     </td>
                                     
                                     <td class="text-end">
-                                        <a data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm" href="/admin/edit-category?id=${categories[i]._id}"  class="action-icon">Edit info</a>
+                                        <div class="dropdown">
+                                        <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item" class="action-icon" href="/admin/edit-category?id=${categories[i]._id}">Edit info</a>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>`
                                 

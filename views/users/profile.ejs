@@ -496,14 +496,14 @@ function updateProfile(){
           // Create "Previous" button
           if (currentPage > 1) {
             console.log(currentPage)
-            pagination.innerHTML += `<a href="#" onclick="fetchOrders(${currentPage - 1})">Previous</a>`;
+            pagination.innerHTML += `<a href="#" onclick="fetchOrders(${currentPage - 1})">Previous </a>`;
           }
 
           // Create page number links
           for (let i = 1; i <= totalPages; i++) {
             pagination.innerHTML += `
               <a href="#" onclick="fetchOrders(${i})" ${i === currentPage ? 'class="active"' : ''}>
-                ${i}
+                ${i} 
               </a>
             `;
           }
@@ -511,7 +511,7 @@ function updateProfile(){
           // Create "Next" button
           if (currentPage < totalPages) {
 
-            pagination.innerHTML += `<a href="#" onclick="fetchOrders(${currentPage + 1})">Next</a>`;
+            pagination.innerHTML += `<a href="#" onclick="fetchOrders(${currentPage + 1})"> Next</a>`;
           }
         })
         .catch((error) => {

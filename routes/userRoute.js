@@ -165,18 +165,5 @@ userRoute.get('/search-product',isLogin,isBlocked,productController.searchProduc
 // userRoute.get('/filterList',isLogin,isBlocked,productController.filterProduct)
 userRoute.get('/product-detail',isLogin,isBlocked,productController.productDetailLoad)
 
-//All routes other than predefined
-// userRoute.get('*',function(req,res){
-//     try {
-//          res.render('404')
-//     }  
-//     catch (error) {
-    
-//       console.log(error.message)
-    
-//    }
-       
-//  })
-
 
 module.exports =  userRoute

@@ -13,13 +13,6 @@ const couponList = async(req,res)=>{
     }
 }
 
-const couponDetail = async(req,res)=>{
-    try {
-        
-    } catch (error) {
-        console.log(error)
-    }
-}
 
 const addCouponLoad = async(req,res)=>{
     try {
@@ -31,20 +24,19 @@ const addCouponLoad = async(req,res)=>{
     }
 }
 
+const generateCouponCode = (disPrice)=>{
+    let code = 'GET'
+    let bytes = secureRandom(2)
+    let randomHex = Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('')
+    randomHex = randomHex.toUpperCase()
+    return `${code}${disPrice}${randomHex}`
+}
+
 const addCoupon = async(req,res)=>{
     try {
         const {description,disPrice,minOrder} = req.body
         console.log(req.body)
 
-        const generateCouponCode = (disPrice)=>{
-            let code = 'GET'
-            let bytes = secureRandom(2)
-            let randomHex = Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('')
-            randomHex = randomHex.toUpperCase()
-            return `${code}${disPrice}${randomHex}`
-        }
-
-        // 
         let couponCode = generateCouponCode(disPrice)
 
         const couponData = new Coupon({
@@ -73,7 +65,7 @@ const editCouponLoad = async(req,res)=>{
         const coupon = await Coupon.findById({_id:id})
 
         if(coupon){
-            res.render('edit-coupon',{ coupon, id:id })
+            res.render('editCoupon',{ coupon, id:id })
         }
         else{
             res.redirect('/admin/coupons')
@@ -87,19 +79,14 @@ const editCouponLoad = async(req,res)=>{
 const editCoupon = async(req,res)=>{
     try {
         
-        const { id,description,disPrice,minOrder } = req.body
-        console.log(req.body)
+        const couponId = req.params.id;
+        const { description, discountPercent, minOrderValue } = req.body;
+        let couponCode = generateCouponCode(discountPercent)
 
-        const couponData = await Coupon.findByIdAndUpdate({_id:id},{
-            $set:{ description: description, discountPercent: disPrice, minOrderValue: minOrder }
-        })
+        const couponData = await Coupon.findByIdAndUpdate(couponId, { description, discountPercent, minOrderValue })
 
-        if(couponData){
             res.redirect('/admin/coupons')
-        }else{
-            console.log('something went wrong')
-        }
-        
+               
     } catch (error) {
         console.log(error.message)
     }
@@ -107,11 +94,11 @@ const editCoupon = async(req,res)=>{
 
 const blockCoupon = async(req,res)=>{
     try {
-        const id = req.query.id
-        const block = await Coupon.findByIdAndUpdate({_id:id},{
+        const id = req.params.id
+        const updatedCoupon = await Coupon.findByIdAndUpdate({_id:id},{
             $set:{block:true}
         })
-        res.redirect('coupons')
+        res.json({ message: "Coupon blocked successfully", coupon: updatedCoupon });
     } catch (error) {
         console.log(error.message)
     }
@@ -119,12 +106,12 @@ const blockCoupon = async(req,res)=>{
 
 const unblockCoupon = async(req,res)=>{
     try {
-        const id = req.query.id
-        const unblock = await Coupon.findByIdAndUpdate({_id:id},{
+        const id = req.params.id
+        const updatedCoupon = await Coupon.findByIdAndUpdate({_id:id},{
             $set:{block:false}
         })
-        res.redirect('coupons')
-        
+        res.json({ message: "Coupon unblocked successfully", coupon: updatedCoupon });
+
     } catch (error) {
         console.log(error.message)
     }
@@ -239,7 +226,6 @@ const paginateCoupons = async(req,res)=>{
 
 module.exports ={
     couponList,
-    couponDetail,
     addCouponLoad,
     addCoupon,
     editCouponLoad,

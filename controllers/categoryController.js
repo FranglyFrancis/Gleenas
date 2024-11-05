@@ -1,5 +1,5 @@
-const Category = require("../models/categoryModel")
-const { findByIdAndUpdate } = require("../models/userModel")
+const Category = require("../models/Category")
+const { findByIdAndUpdate } = require("../models/User")
 const {ObjectId} = require('mongodb');
 var mongoose = require('mongoose');
 

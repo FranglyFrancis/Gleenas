@@ -1,10 +1,10 @@
 const cartController = require('./cartController.js')
 const wishlistController = require('./wishlistController.js')
 const addressController = require('./addressController.js')
-const User = require('../models/userModel.js')
+const User = require('../models/User.js')
 const Order = require('../models/Order.js')
 const Wallet = require('../models/Wallet.js')
-const Category = require('../models/categoryModel.js')
+const Category = require('../models/Category.js')
 
 
 
